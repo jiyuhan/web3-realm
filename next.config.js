@@ -6,4 +6,5 @@ module.exports = {
   },
   reactStrictMode: true,
   swcMinify: true,
+  exportTrailingSlash: true,
 };
