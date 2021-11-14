@@ -6,5 +6,6 @@ module.exports = {
   },
   reactStrictMode: true,
   swcMinify: true,
-  exportTrailingSlash: true,
+  trailingSlash: true,
+  distDir: 'build'
 };
