@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Web3Provider } from "@ethersproject/providers";
 import {
   UnsupportedChainIdError,
@@ -10,7 +11,7 @@ import {
 } from "@web3-react/injected-connector";
 import Head from "next/head";
 import Image from "next/image";
-import * as React from "react";
+
 import styles from "../styles/Home.module.css";
 import { injected, network } from "../wallet/connectors";
 import { useEagerConnect, useInactiveListener } from "../wallet/hooks";
@@ -33,7 +34,7 @@ const getErrorMessage = (error) => {
   }
 };
 
-const getLibrary = (provider) => {
+const getLibrary = (provider, connector) => {
   const library = new Web3Provider(provider);
   library.pollingInterval = 12000;
   return library;
@@ -50,7 +51,6 @@ export default function () {
 }
 
 const App = () => {
-  const context = useWeb3React();
   const {
     connector,
     active,
@@ -59,8 +59,8 @@ const App = () => {
     deactivate,
     library,
     chainId,
-    account,
-  } = context;
+    account
+  } = useWeb3React();
 
   const [activatingConnector, setActivatingConnector] = React.useState();
   React.useEffect(() => {
@@ -109,24 +109,6 @@ const App = () => {
             );
           })}
         </main>
-
-        <footer className={styles.footer}>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Powered by{" "}
-            <span className={styles.logo}>
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                width={72}
-                height={16}
-              />
-            </span>
-          </a>
-        </footer>
       </div>
     </>
   );
