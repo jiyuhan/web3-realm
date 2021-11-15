@@ -10,22 +10,16 @@ import {
   UserRejectedRequestError as UserRejectedRequestErrorInjected
 } from "@web3-react/injected-connector";
 import Head from "next/head";
-import Image from "next/image";
 
 import styles from "../styles/Home.module.css";
-import { injected, network } from "../wallet/connectors";
-import { useEagerConnect, useInactiveListener } from "../wallet/hooks";
+import { WalletMetadataView } from "./components/WalletMetadataView";
 
-const connectorsByName = {
-  Injected: injected,
-  Network: network,
-}
 
 const getErrorMessage = (error) => {
   if (error instanceof NoEthereumProviderError) {
     return "No Ethereum browser provider detected. Please install MetaMask.";
   } else if (error instanceof UnsupportedChainIdError) {
-    return `MetaMask detected an unsupported network. Please switch to ${error.chainId} network.`;
+    return `MetaMask detected an unsupported network. Please switch to another network.`;
   } else if (error instanceof UserRejectedRequestErrorInjected) {
     return "Please authorize this application to access your Ethereum account in Metamask.";
   } else {
@@ -34,47 +28,16 @@ const getErrorMessage = (error) => {
   }
 };
 
-const getLibrary = (provider, connector) => {
+const getLibrary = (provider) => {
   const library = new Web3Provider(provider);
-  library.pollingInterval = 12000;
   return library;
 };
 
-// eslint-disable-next-line import/no-anonymous-default-export
-// eslint-disable-next-line react/display-name
-export default function () {
-  return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <App />
-    </Web3ReactProvider>
-  );
-}
-
 const App = () => {
-  const {
-    connector,
-    active,
-    error,
-    activate,
-    deactivate,
-    library,
-    chainId,
-    account
-  } = useWeb3React();
-
-  const [activatingConnector, setActivatingConnector] = React.useState();
-  React.useEffect(() => {
-    if (activatingConnector && activatingConnector === connector) {
-      setActivatingConnector();
-    }
-  }, [activatingConnector, connector]);
-
-  const triedEager = useEagerConnect();
-
-  useInactiveListener(!triedEager || !!activatingConnector);
+  const context = useWeb3React();
 
   return (
-    <>
+    <div>
       <div className={styles.container}>
         <Head>
           <title>My Realm</title>
@@ -82,36 +45,20 @@ const App = () => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        
-
         <main className={styles.main}>
-          <h1 className={styles.title}>
-            Welcome to your <a href="">Realm</a>
-          </h1>
-
-          <p className={styles.description}>
-            Connect your wallet to get started{" "}
-          </p>
-
-          {Object.keys(connectorsByName).map((name) => {
-            const currectConnector = connectorsByName[name];
-            const activating = currectConnector === activatingConnector;
-            const connected = currectConnector === connector;
-            const disabled = !triedEager || !!activatingConnector || connected || !!error;
-            return (
-              <div className={styles.grid} key={name}>
-                <div href="https://nextjs.org/docs" className={styles.card}>
-                  <button disabled={disabled} onClick={() => {
-                    console.log("clicked connect");
-                    setActivatingConnector(currectConnector);
-                    activate(connectorsByName[name]);
-                  }}>{name}</button>
-                </div>
-              </div>
-            );
-          })}
+          <div><WalletMetadataView /></div>
+          {context.error && <p>{getErrorMessage(context.error)}</p>}
         </main>
       </div>
-    </>
+    </div>
   );
 };
+
+
+export default function wrappedProvider () {
+  return (
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <App />
+    </Web3ReactProvider>
+  );
+}
