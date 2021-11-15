@@ -13,6 +13,7 @@ import Head from "next/head";
 
 import styles from "../styles/Home.module.css";
 import { WalletMetadataView } from "./components/WalletMetadataView";
+import { EthAddressSearchView } from "./components/EthAddressSearchView";
 
 
 const getErrorMessage = (error) => {
@@ -48,6 +49,7 @@ const App = () => {
         <main className={styles.main}>
           <div><WalletMetadataView /></div>
           {context.error && <p>{getErrorMessage(context.error)}</p>}
+          <div><EthAddressSearchView /></div>
         </main>
       </div>
     </div>

@@ -7,7 +7,7 @@ import { injectedConnector } from "../../wallet/connectors";
 import { NETWORK_NAME_TO_CHAIN_ID } from "../constants/network";
 import { parseBigNumberToString } from "../util/bigNumberConverter";
 
-export const WalletMetadataView = function () {
+export const EthAddressSearchView = function () {
   const context = useWeb3React();
   const {
     connector,
@@ -33,30 +33,6 @@ export const WalletMetadataView = function () {
   }, [active, account, library]);
 
   return (
-    <div className={styles.card}>
-      {active ? (
-        <div>
-          <p>Wallet connected</p>
-          <p>Network: {NETWORK_NAME_TO_CHAIN_ID[chainId]}</p>
-          <p>Address: {`${account.substring(0, 10)}...`}</p>
-          <p>Ξ {ethBalance}</p>
-          <button
-            onClick={() => {
-              deactivate(injectedConnector);
-            }}
-          >
-            Disconnect
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => {
-            activate(injectedConnector);
-          }}
-        >
-          Connect
-        </button>
-      )}
-    </div>
+    <input placeholder='Type eth or ENS address here' />
   );
 };
