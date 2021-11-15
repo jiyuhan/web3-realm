@@ -20,19 +20,42 @@ export const EthAddressSearchView = function () {
     account,
   } = context;
 
-  const [ethBalance, setWalletEthBalance] = useState(0);
-
-  useEffect(() => {
-    if (active) {
-      async function getEthBalance(address) {
-        const ethBalance = await library.getBalance(address);
-        setWalletEthBalance(parseBigNumberToString(18, ethBalance));
-      }
-      getEthBalance(account);
-    }
-  }, [active, account, library]);
+  const [userInput, setUserInput] = useState("");
+  const [searchAddressBalance, setSearchAddressBalance] = useState(null);
+  const [resolvedAddress, setResolvedEnsAddress] = useState();
 
   return (
-    <input placeholder='Type eth or ENS address here' />
+    <div>
+      <input
+        placeholder="Type eth or ENS address here"
+        onInput={(event) => {
+          setUserInput(event.target.value);
+        }}
+        onKeyPress={(event) => {
+          console.log('key pressed', event.key);
+          if (event.key === 'Enter') {
+            event.preventDefault();
+
+            if (active) {
+              async function getEthBalance(address) {
+                const ethBalance = await library.getBalance(address);
+                setSearchAddressBalance(parseBigNumberToString(18, ethBalance));
+              }
+              async function resolveName(address) {
+                const result = await library.resolveName(address);
+                setResolvedEnsAddress(result);
+              }
+              getEthBalance(userInput);
+              resolveName(userInput);
+            }
+          }
+        }}
+      />
+      {searchAddressBalance !== null && <div className={styles.card}>
+        <p>Address: {resolvedAddress}</p>
+        <p>Ξ {searchAddressBalance}</p>
+        <button>Follow</button>
+      </div>}
+    </div>
   );
 };

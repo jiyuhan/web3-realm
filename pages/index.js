@@ -49,7 +49,7 @@ const App = () => {
         <main className={styles.main}>
           <div><WalletMetadataView /></div>
           {context.error && <p>{getErrorMessage(context.error)}</p>}
-          <div><EthAddressSearchView /></div>
+          {context.active && <div><EthAddressSearchView /></div>}
         </main>
       </div>
     </div>
