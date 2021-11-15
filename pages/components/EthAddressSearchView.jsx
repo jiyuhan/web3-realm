@@ -38,12 +38,23 @@ export const EthAddressSearchView = function () {
 
             if (active) {
               async function getEthBalance(address) {
-                const ethBalance = await library.getBalance(address);
-                setSearchAddressBalance(parseBigNumberToString(18, ethBalance));
+                try {
+                  const ethBalance = await library.getBalance(address);
+                  setSearchAddressBalance(parseBigNumberToString(18, ethBalance));
+
+                } catch (error) {
+                  setSearchAddressBalance(null);
+                }
               }
               async function resolveName(address) {
-                const result = await library.resolveName(address);
-                setResolvedEnsAddress(result);
+                try {
+                  const result = await library.resolveName(address);
+                  setResolvedEnsAddress(result);
+
+                } catch (error) {
+                  setResolvedEnsAddress(null);
+                  setSearchAddressBalance(null);
+                }
               }
               getEthBalance(userInput);
               resolveName(userInput);
