@@ -40,7 +40,7 @@ export const useInactiveListener = (suppress = false) => {
         activate(injectedConnector);
       };
       const handleChainChanged = (chainId) => {
-        console.log("handling 'chainChanged' event..");
+        console.log(`handling 'chainChanged' event..: ${chainId}`);
         deactivate(injectedConnector);
         activate(injectedConnector);
       };

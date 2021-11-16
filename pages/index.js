@@ -1,20 +1,18 @@
-import * as React from "react";
+import { EthAddressSearchView } from "@/components/EthAddressSearchView";
+import { WalletMetadataView } from "@/components/WalletMetadataView";
+import styles from "@/styles/Home.module.css";
 import { Web3Provider } from "@ethersproject/providers";
 import {
   UnsupportedChainIdError,
   useWeb3React,
-  Web3ReactProvider
+  Web3ReactProvider,
 } from "@web3-react/core";
 import {
   NoEthereumProviderError,
-  UserRejectedRequestError as UserRejectedRequestErrorInjected
+  UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from "@web3-react/injected-connector";
 import Head from "next/head";
-
-import styles from "../styles/Home.module.css";
-import { WalletMetadataView } from "./components/WalletMetadataView";
-import { EthAddressSearchView } from "./components/EthAddressSearchView";
-
+import * as React from "react";
 
 const getErrorMessage = (error) => {
   if (error instanceof NoEthereumProviderError) {
@@ -39,25 +37,33 @@ const App = () => {
 
   return (
     <div>
+      <Head>
+        <title>My Realm</title>
+        <meta name="description" content="" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <div className={styles.container}>
-        <Head>
-          <title>My Realm</title>
-          <meta name="description" content="" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-
-        <main className={styles.main}>
-          <div><WalletMetadataView /></div>
+        <div className={styles.header}>
+          <WalletMetadataView />
+        </div>
+        <nav>
           {context.error && <p>{getErrorMessage(context.error)}</p>}
-          {context.active && <div><EthAddressSearchView /></div>}
-        </main>
+          {context.active && (
+            <div>
+              <EthAddressSearchView />
+            </div>
+          )}
+        </nav>
+        {/* <nav className="items">NAV</nav>
+        <div className="items contents">CONTENTS</div>
+        <aside className="items">ASIDE</aside>
+        <div className={styles.footer}>FOOTER</div> */}
       </div>
     </div>
   );
 };
 
-
-export default function wrappedProvider () {
+export default function wrappedProvider() {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <App />

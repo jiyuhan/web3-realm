@@ -2,10 +2,10 @@ import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import { useState, useEffect } from "react";
 
-import styles from "../../styles/Home.module.css";
-import { injectedConnector } from "../../wallet/connectors";
-import { NETWORK_NAME_TO_CHAIN_ID } from "../constants/network";
-import { parseBigNumberToString } from "../util/bigNumberConverter";
+import styles from "@/styles/Home.module.css";
+// import { injectedConnector } from "@/wallet/connectors";
+// import { NETWORK_NAME_TO_CHAIN_ID } from "@/pages/constants/network";
+import { parseBigNumberToString } from "@/pages/util/bigNumberConverter";
 
 export const EthAddressSearchView = function () {
   const context = useWeb3React();
@@ -62,7 +62,7 @@ export const EthAddressSearchView = function () {
           }
         }}
       />
-      {searchAddressBalance !== null && <div className={styles.card}>
+      {searchAddressBalance !== null && <div>
         <p>Address: {resolvedAddress}</p>
         <p>Ξ {searchAddressBalance}</p>
         <button>Follow</button>
