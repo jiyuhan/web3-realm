@@ -1,6 +1,6 @@
 // import { injectedConnector } from "@/wallet/connectors";
 // import { NETWORK_NAME_TO_CHAIN_ID } from "@/pages/constants/network";
-import { parseBigNumberToString } from "@/pages/util/bigNumberConverter";
+import { parseBigNumberToString } from "util/bigNumberConverter";
 import { Input } from "@geist-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import * as React from "react";

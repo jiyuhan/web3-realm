@@ -1,15 +1,15 @@
 import {
+  Avatar,
   Button,
   Divider,
   Fieldset,
+  Grid,
   Link,
+  Spacer,
   Text,
-  Tooltip,
-  User,Grid,Avatar,Spacer
 } from "@geist-ui/react";
 import * as Icon from "@geist-ui/react-icons";
 import * as React from "react";
-import {styled} from '@emotion/styled'
 const following = {
   address: "0xb407e25e70ce8f9273cd9bd25cf18a98ab151dce",
   following: [
@@ -65,7 +65,7 @@ export const FeedCard = (props) => {
   max-width: calc(100% - 20 px);
       */}
 
-      <Fieldset style={{width: '480px', maxWidth: "calc(100% - 200px)"}}>
+      <Fieldset style={{ width: "480px", maxWidth: "calc(100% - 20px)" }}>
         <Fieldset.Content py="8pt" px="10pt">
           <Grid.Container alignItems="center" justify="flex-start">
             <Grid w="33%">
@@ -93,7 +93,9 @@ export const FeedCard = (props) => {
 
         <Divider my={0} />
         <Fieldset.Content>
-          <Text>{text}</Text>
+          <Text scale={1.25} mb={0}>
+            {text}
+          </Text>
         </Fieldset.Content>
         <Fieldset.Footer
           py="0px"

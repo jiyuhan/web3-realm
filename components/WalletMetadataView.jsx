@@ -1,4 +1,4 @@
-import { parseBigNumberToString } from "@/pages/util/bigNumberConverter";
+import { parseBigNumberToString } from "util/bigNumberConverter";
 import { injectedConnector } from "@/wallet/connectors";
 import {
   Grid,
@@ -132,7 +132,7 @@ export const WalletMetadataView = () => {
             w="75%"
             scale={1}
             type="success-light"
-            
+
             onClick={() => {
               activate(injectedConnector);
             }}
