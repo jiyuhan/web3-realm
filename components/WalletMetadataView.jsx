@@ -18,7 +18,7 @@ import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import styled from "@emotion/styled";
 import { EthereumIcon } from "./icons/Ethereum";
-import { follow, getThreeIdConnectClient, loadFollowing, unfollow } from "store/ceramicStore";
+import { follow, authenticateAndGetClient, loadFollowing, unfollow } from "store/ceramicStore";
 
 
 
@@ -93,7 +93,7 @@ const Header = styled.div`
 `;
 
 const testingFunction = async function() {
-  const ceramicClient = await getThreeIdConnectClient();
+  const ceramicClient = await authenticateAndGetClient();
   await follow(ceramicClient, '0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba');
   const followingList = await loadFollowing(ceramicClient);
   console.log(followingList);

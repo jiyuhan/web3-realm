@@ -16,7 +16,7 @@ const CLAY_TESTNET_ENDPOINT = 'https://ceramic-clay.3boxlabs.com';
  * Obtain an authenticated ceramic client
  * @returns ceramic client
  */
-export const getThreeIdConnectClient = async function() {
+export const authenticateAndGetClient = async function() {
   const provider = await detectEthereumProvider();
   if (provider) {
     const addresses = await provider.enable();
