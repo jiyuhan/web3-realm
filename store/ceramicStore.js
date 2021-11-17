@@ -8,9 +8,6 @@ import { DID } from 'dids';
 import detectEthereumProvider from '@metamask/detect-provider';
 
 const CLAY_TESTNET_ENDPOINT = 'https://ceramic-clay.3boxlabs.com';
-// const did = new DID({ resolver })
-// ceramic.did = did
-
 
 /**
  * Obtain an authenticated ceramic client
@@ -31,7 +28,6 @@ export const authenticateAndGetClient = async function() {
     });
 
     await did.authenticate();
-    // window.idx = new IDX({ ceramic });
     window.ceramic = ceramic;
     window.did = did.id;
 
@@ -111,6 +107,8 @@ export const loadFollowing = async function(ceramicClient) {
       { family: ceramicClient.signedInEthAddress, tags: ['following']},
       { pin: true }
     );
+
+    console.log(retrievedDoc.content);
 
     return retrievedDoc.content;
   } catch (error) {
