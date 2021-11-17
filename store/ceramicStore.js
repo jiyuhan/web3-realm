@@ -1,6 +1,7 @@
 import { EthereumAuthProvider, ThreeIdConnect } from '@3id/connect';
 
 import CeramicClient from '@ceramicnetwork/http-client';
+import { TileDocument } from '@ceramicnetwork/stream-tile';
 import KeyDidResolver from 'key-did-resolver';
 import ThreeIdResolver from '@ceramicnetwork/3id-did-resolver';
 import { DID } from 'dids';
@@ -26,6 +27,8 @@ export const getThreeIdConnectClient = async function(ethProvider, signedInEthAd
   window.idx = new IDX({ ceramic });
   window.ceramic = ceramic;
   window.did = did.id;
+
+  return ceramic;
 }
 
 
@@ -40,9 +43,22 @@ export const signIn = async function() {
 /**
  * Follow an address. This call needs authentication
  */
-export const follow = async function() {
+export const follow = async function(ceramicClient, followingAddress) {
   // deterministic entry, family: <authenticated address>, tags: [following]
   // https://developers.ceramic.network/streamtypes/tile-document/api/#create-a-deterministic-tiledocument
+
+  const retrievedDoc = await TileDocument.deterministic(
+    ceramicClient,
+    // [followingAddress],
+    { family: ceramicClient.signedInEthAddress, tags: ['following']},
+    { pin: true }
+  );
+
+  if (doesNotExist) {
+
+  } else {
+
+  }
 }
 
 /**
