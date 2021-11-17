@@ -1,17 +1,23 @@
 import { parseBigNumberToString } from "@/pages/util/bigNumberConverter";
 import { injectedConnector } from "@/wallet/connectors";
 import {
+  Grid,
   Button,
+  ButtonGroup,
   Card,
   Dot,
   Spacer,
-  useClipboard,Text,
-  useToasts,
+  Link,
+  Toggle,
+  Text,
+  useClipboard,
+  useToasts, Input
 } from "@geist-ui/react";
-import { LogOut } from "@geist-ui/react-icons";
+import * as Icon from "@geist-ui/react-icons";
 import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
+import { EthereumIcon } from "./icons/Ethereum";
 function Account() {
   const { account } = useWeb3React();
 
@@ -20,7 +26,7 @@ function Account() {
       {account === null
         ? "-"
         : account
-        ? `${account.substring(0, 6)}...${account.substring(
+        ? `${account.substring(0, 6)}......${account.substring(
             account.length - 4
           )}`
         : ""}
@@ -34,7 +40,6 @@ function Balance() {
   React.useEffect(() => {
     if (!!account && !!library) {
       let stale = false;
-
       library
         .getBalance(account)
         .then((balance) => {
@@ -59,17 +64,28 @@ function Balance() {
       {balance === null
         ? "Error"
         : balance
-        ? `Ξ${parseBigNumberToString(18, balance).substr(0, 4)}`
+        ? parseBigNumberToString(18, balance).substr(0, 4)
         : ""}
     </>
   );
 }
 
 const Header = styled.div`
-  width: 350px;
-  height: 25px;
+  /* width: 400px;
+  max-width: calc(100% - 20px);
+  height: 50px;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-end; */
+
+  width: 50%;
+  max-width: calc(100% - 20 px);
+  height: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 `;
 
 export const WalletMetadataView = () => {
@@ -85,47 +101,48 @@ export const WalletMetadataView = () => {
 
   return (
     <Header>
-      {active ? (
-        <>
-          {/* <Card w="200px" h="24px">
-            <Card.Content paddingTop="0" paddingBottom="0">
-              <Text font="14px">
+      <Grid xs={22}>
+        {active ? (
+          <>
+            <Button
+              auto
+              w="45%"
+              mx="2px"
+              iconRight={<Icon.Copy />}
+              onClick={handleCopy}
+            >
               <Account />
-              <Spacer inline />
+            </Button>
+            <Button auto w="25%" mx="2px" effect={false} icon={<EthereumIcon/>}>
               <Balance />
-              </Text>
-            </Card.Content>
-          </Card> */}
-          <Button h="24px" onClick={handleCopy}>
-            <Account />
-            <Spacer w={2.2} />
-            <Balance />
-          </Button>
-
+            </Button>
+            <Button
+              onClick={() => {
+                deactivate(injectedConnector);
+              }}
+              icon={<Icon.LogOut />}
+              auto
+              w="30%"
+              mx="2px"
+            />
+          </>
+        ) : (
           <Button
-            h="24px"
-            w="28px"
-            icon={<LogOut />}
+            mx="5px"
+            w="75%"
+            scale={1}
+            type="success-light"
+            
             onClick={() => {
-              deactivate(injectedConnector);
+              activate(injectedConnector);
             }}
-          ></Button>
-        </>
-      ) : (
-        <Button
-          w="90%"
-          h="24px"
-          type="success-light"
-          onClick={() => {
-            activate(injectedConnector);
-          }}
-        >
-          Connect
-        </Button>
-      )}
-      <Button h="24px" w="2px" disabled>
+          >
+            Connect your wallet
+          </Button>
+        )}
+        <Spacer inline />
         <Dot type={active ? "success" : error ? "error" : "warning"} />
-      </Button>
+      </Grid>
     </Header>
   );
 };

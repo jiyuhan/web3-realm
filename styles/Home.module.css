@@ -1,7 +1,7 @@
 .container {
-  padding: 0.5rem 2rem;
+  padding: 1rem 1rem;
   display: grid;
-  grid-template-columns: 1fr 5fr 2fr;
+  grid-template-columns: 25px 5fr 25px;
   grid-template-rows: 50px 20fr 5fr;
   grid-gap: 10px;
   height: 100vh;
@@ -9,14 +9,20 @@
 
 .header {
   display: flex;
-  grid-column-start: 1;
-  grid-column-end: 4;
+  grid-area: 1/1/1/4;
   justify-content: flex-end;
 }
 
-.footer {
-  grid-column-start: 1;
-  grid-column-end: 4;
+.content {
+  margin-top: 50px;
+  display: flex;
+  grid-area: 2/1/4/4;
+  flex-direction: column;
+  align-items: center;
+}
+
+.feed {
+
 }
 
 /*

@@ -1,1 +1,1 @@
-export * from "LogoutSVG";
+export * from "./Ethereum";
