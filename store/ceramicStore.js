@@ -45,27 +45,7 @@ export const follow = async function(ceramicClient, followingAddress) {
   // deterministic entry, family: <authenticated address>, tags: [following]
   // https://developers.ceramic.network/streamtypes/tile-document/api/#create-a-deterministic-tiledocument
 
-  const retrievedDoc = await TileDocument.deterministic(
-    ceramicClient,
-    { family: ceramicClient.signedInEthAddress, tags: ['following']},
-    { pin: true }
-  );
-
-  console.log(retrievedDoc.content);
-
-  if (retrievedDoc.content === undefined || retrievedDoc.content === null) {
-    return await retrievedDoc.update(
-      { following: [followingAddress]},
-      { family: ceramicClient.signedInEthAddress, tags: ['following']},
-      { pin: true }
-    );
-  } else {
-    return await retrievedDoc.update(
-      { following: [...new Set([...retrievedDoc.content.following, followingAddress])]},
-      { family: ceramicClient.signedInEthAddress, tags: ['following']},
-      { pin: true }
-    );
-  }
+  await add(ceramicClient, 'following', followingAddress);
 }
 
 /**
@@ -75,9 +55,96 @@ export const unfollow = async function(ceramicClient, unfollowAddress) {
   // update stream, family: <authenticated address>, tags: [following]
   // https://developers.ceramic.network/streamtypes/tile-document/api/#update-a-tiledocument
 
+  await remove(ceramicClient, 'following', unfollowAddress);
+}
+
+/**
+ * Load all addresses the authenticated wallet itself is following
+ */
+ export const loadFollowing = async function(ceramicClient) {
+  // load stream, family: <any address>, tags: [following]
+  // https://developers.ceramic.network/streamtypes/tile-document/api/#query-a-deterministic-tiledocument
+
+  return await getList(ceramicClient, 'following', ceramicClient.signedInEthAddress);
+}
+
+/**
+ * Load all addresses a particular address is following. This call does not require authentication
+ */
+export const loadFollowingForAddress = async function(ceramicClient, forAddress) {
+  // load stream, family: <any address>, tags: [following]
+  // https://developers.ceramic.network/streamtypes/tile-document/api/#query-a-deterministic-tiledocument
+
+  return await getList(ceramicClient, 'following', forAddress);
+}
+
+/**
+ * Favorite a transaction. This call needs authentication
+ */
+export const favoriteTransaction = async function(ceramicClient, transactionHash) {
+  // deterministic entry, family: <authenticated address>, tags: [favorite]
+
+  await add(ceramicClient, 'favorite', transactionHash);
+}
+
+
+/**
+ * Un-favorite a transaction. This call needs authentication
+ */
+ export const unfavoriteTransaction = async function(ceramicClient, transactionHash) {
+  // update entry, family: <authenticated address>, tags: [favorite]
+
+  await remove(ceramicClient, 'favorite', transactionHash);
+}
+
+/**
+ * Load all favorite transactions for wallet itself. This call needs authentication
+ */
+export const loadAllFavoriteTransactions = async function(ceramicClient) {
+  // load stream, family: <any address>, tags: [favorite]
+
+  return await getList(ceramicClient, 'favorite', ceramicClient.signedInEthAddress);
+}
+
+/**
+ * Load all favorite transactions for a particular address. This call needs authentication
+ */
+ export const loadAllFavoriteTransactionsForAddress = async function(ceramicClient, forAddress) {
+  // load stream, family: <any address>, tags: [favorite]
+
+  return await getList(ceramicClient, 'favorite', forAddress);
+}
+
+const add = async function(ceramicClient, tag, item) {
   const retrievedDoc = await TileDocument.deterministic(
     ceramicClient,
-    { family: ceramicClient.signedInEthAddress, tags: ['following']},
+    { family: ceramicClient.signedInEthAddress, tags: [tag]},
+    { pin: true }
+  );
+
+  console.log(retrievedDoc.content);
+
+  if (!retrievedDoc.content
+    || Object.keys(retrievedDoc.content).length === 0
+  ) {
+    return await retrievedDoc.update(
+      { [tag]: [item]},
+      { family: ceramicClient.signedInEthAddress, tags: [tag]},
+      { pin: true }
+    );
+  } else {
+    return await retrievedDoc.update(
+      { [tag]: [...new Set([...retrievedDoc.content[tag], item])]},
+      { family: ceramicClient.signedInEthAddress, tags: [tag]},
+      { pin: true }
+    );
+  }
+}
+
+const remove = async function(ceramicClient, tag, item) {
+  const retrievedDoc = await TileDocument.deterministic(
+    ceramicClient,
+    { family: ceramicClient.signedInEthAddress, tags: [tag]},
     { pin: true }
   );
 
@@ -87,24 +154,18 @@ export const unfollow = async function(ceramicClient, unfollowAddress) {
     return;
   } else {
     return await retrievedDoc.update(
-      { following: retrievedDoc.content.following.filter(x => x !== unfollowAddress)},
-      { family: ceramicClient.signedInEthAddress, tags: ['following']},
+      { [tag]: retrievedDoc.content[tag].filter(x => x !== item)},
+      { family: ceramicClient.signedInEthAddress, tags: [tag]},
       { pin: true }
     );
   }
 }
 
-/**
- * Load all addresses a particular address is following. This call is open to public
- */
-export const loadFollowing = async function(ceramicClient) {
-  // load stream, family: <any address>, tags: [following]
-  // https://developers.ceramic.network/streamtypes/tile-document/api/#query-a-deterministic-tiledocument
-
+const getList = async function(ceramicClient, tag, forAddress) {
   try {
     const retrievedDoc = await TileDocument.deterministic(
       ceramicClient,
-      { family: ceramicClient.signedInEthAddress, tags: ['following']},
+      { family: forAddress, tags: [tag]},
       { pin: true }
     );
 
@@ -116,25 +177,4 @@ export const loadFollowing = async function(ceramicClient) {
 
     throw new Error('Error getting data');
   }
-}
-
-/**
- * Favorite a transaction. This call needs authentication
- */
-export const favoriteTransaction = async function() {
-  // deterministic entry, family: <authenticated address>, tags: [favorite]
-}
-
-/**
- * Un-favorite a transaction. This call needs authentication
- */
- export const unfavoriteTransaction = async function() {
-  // update entry, family: <authenticated address>, tags: [favorite]
-}
-
-/**
- * Load all favorite transactions by an address. This call needs authentication
- */
-export const loadAllFavoriteTransactions = async function() {
-  // load stream, family: <any address>, tags: [favorite]
 }

@@ -18,7 +18,15 @@ import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import styled from "@emotion/styled";
 import { EthereumIcon } from "./icons/Ethereum";
-import { follow, authenticateAndGetClient, loadFollowing, unfollow } from "store/ceramicStore";
+import {
+  follow,
+  authenticateAndGetClient,
+  loadFollowing,
+  unfollow,
+  favoriteTransaction,
+  loadAllFavoriteTransactions,
+  unfavoriteTransaction
+} from "store/ceramicStore";
 
 
 
@@ -95,10 +103,16 @@ const Header = styled.div`
 const testingFunction = async function() {
   const ceramicClient = await authenticateAndGetClient();
   await follow(ceramicClient, '0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba');
-  const followingList = await loadFollowing(ceramicClient);
+  await loadFollowing(ceramicClient);
 
   await unfollow(ceramicClient, '0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba');
-  const followingList = await loadFollowing(ceramicClient);
+  await loadFollowing(ceramicClient);
+
+  await favoriteTransaction(ceramicClient, '0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3');
+  await loadAllFavoriteTransactions(ceramicClient);
+
+  await unfavoriteTransaction(ceramicClient, '0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3');
+  await loadAllFavoriteTransactions(ceramicClient);
 }
 
 export const WalletMetadataView = () => {
