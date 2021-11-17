@@ -9,6 +9,7 @@
     "export": "next export"
   },
   "dependencies": {
+    "@3id/connect": "^0.2.5",
     "@ceramicnetwork/http-client": "^1.4.4",
     "@emotion/react": "^11.6.0",
     "@emotion/styled": "^11.6.0",
