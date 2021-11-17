@@ -15,7 +15,7 @@ export const fetchOpenSeaData = async (avatarAddress) => {
   return data;
 }
 
-const fetchAddresData = async (address, provider) => {
+const fetchAddressData = async (address, provider) => {
   const balance = await provider.getBalance(address);
   // ENS data
   const resolver = await provider.getResolver(address);
@@ -61,7 +61,7 @@ export const EthAddressSearchView = (props) => {
     console.log("key pressed", event.key);
     if (event.key === "Enter") {
       event.preventDefault();
-      fetchAddresData(userInput, library).then((item) => {
+      fetchAddressData(userInput, library).then((item) => {
         console.log(item);
         return <pre>{JSON.stringify(item)}</pre>;
         // setSearchAddressBalance(item.balance)

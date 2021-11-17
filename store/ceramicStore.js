@@ -2,42 +2,44 @@ import { EthereumAuthProvider, ThreeIdConnect } from '@3id/connect';
 
 import CeramicClient from '@ceramicnetwork/http-client';
 import { TileDocument } from '@ceramicnetwork/stream-tile';
-import KeyDidResolver from 'key-did-resolver';
 import ThreeIdResolver from '@ceramicnetwork/3id-did-resolver';
 import { DID } from 'dids';
 
+import detectEthereumProvider from '@metamask/detect-provider';
 
 const CLAY_TESTNET_ENDPOINT = 'https://ceramic-clay.3boxlabs.com';
-const did = new DID({ resolver })
-ceramic.did = did
-
-
-export const getThreeIdConnectClient = async function(ethProvider, signedInEthAddress) {
-  const authProvider = new EthereumAuthProvider(ethProvider, signedInEthAddress);
-  const threeIdConnect = new ThreeIdConnect();
-  await threeIdConnect.connect(authProvider);
-
-  const ceramic = new CeramicClient(CLAY_TESTNET_ENDPOINT);
-  const did = new DID({
-    provider: threeIdConnect.getDidProvider(),
-    resolver: ThreeIdResolver.getResolver(ceramic),
-  });
-
-  await did.authenticate();
-  window.idx = new IDX({ ceramic });
-  window.ceramic = ceramic;
-  window.did = did.id;
-
-  return ceramic;
-}
+// const did = new DID({ resolver })
+// ceramic.did = did
 
 
 /**
- * using 3ID-DID authentication path
- * https://developers.ceramic.network/authentication/3id-did/3id-connect
+ * Obtain an authenticated ceramic client
+ * @returns ceramic client
  */
-export const signIn = async function() {
+export const getThreeIdConnectClient = async function() {
+  const provider = await detectEthereumProvider();
+  if (provider) {
+    const addresses = await provider.enable();
+    const authProvider = new EthereumAuthProvider(provider, addresses[0]);
+    const threeIdConnect = new ThreeIdConnect();
+    await threeIdConnect.connect(authProvider);
 
+    const ceramic = new CeramicClient(CLAY_TESTNET_ENDPOINT);
+    const did = new DID({
+      provider: threeIdConnect.getDidProvider(),
+      resolver: ThreeIdResolver.getResolver(ceramic),
+    });
+
+    await did.authenticate();
+    // window.idx = new IDX({ ceramic });
+    window.ceramic = ceramic;
+    window.did = did.id;
+
+    ceramic.setDID(did);
+    return ceramic;
+  }
+
+  return null;
 }
 
 /**
@@ -49,32 +51,73 @@ export const follow = async function(ceramicClient, followingAddress) {
 
   const retrievedDoc = await TileDocument.deterministic(
     ceramicClient,
-    // [followingAddress],
     { family: ceramicClient.signedInEthAddress, tags: ['following']},
     { pin: true }
   );
 
-  if (doesNotExist) {
+  console.log(retrievedDoc.content);
 
+  if (retrievedDoc.content === undefined || retrievedDoc.content === null) {
+    return await retrievedDoc.update(
+      { following: [followingAddress]},
+      { family: ceramicClient.signedInEthAddress, tags: ['following']},
+      { pin: true }
+    );
   } else {
-
+    return await retrievedDoc.update(
+      { following: [...new Set([...retrievedDoc.content.following, followingAddress])]},
+      { family: ceramicClient.signedInEthAddress, tags: ['following']},
+      { pin: true }
+    );
   }
 }
 
 /**
  * Unfollow an address. This call needs authentication
  */
-export const unfollow = async function() {
+export const unfollow = async function(ceramicClient, unfollowAddress) {
   // update stream, family: <authenticated address>, tags: [following]
   // https://developers.ceramic.network/streamtypes/tile-document/api/#update-a-tiledocument
+
+  const retrievedDoc = await TileDocument.deterministic(
+    ceramicClient,
+    { family: ceramicClient.signedInEthAddress, tags: ['following']},
+    { pin: true }
+  );
+
+  console.log(retrievedDoc.content);
+
+  if (retrievedDoc.content === undefined || retrievedDoc.content === null) {
+    return;
+  } else {
+    return await retrievedDoc.update(
+      { following: retrievedDoc.content.following.filter(x => x !== unfollowAddress)},
+      { family: ceramicClient.signedInEthAddress, tags: ['following']},
+      { pin: true }
+    );
+  }
 }
 
 /**
  * Load all addresses a particular address is following. This call is open to public
  */
-export const loadFollowing = async function() {
+export const loadFollowing = async function(ceramicClient) {
   // load stream, family: <any address>, tags: [following]
   // https://developers.ceramic.network/streamtypes/tile-document/api/#query-a-deterministic-tiledocument
+
+  try {
+    const retrievedDoc = await TileDocument.deterministic(
+      ceramicClient,
+      { family: ceramicClient.signedInEthAddress, tags: ['following']},
+      { pin: true }
+    );
+
+    return retrievedDoc.content;
+  } catch (error) {
+    console.error(error);
+
+    throw new Error('Error getting data');
+  }
 }
 
 /**
@@ -87,7 +130,7 @@ export const favoriteTransaction = async function() {
 /**
  * Un-favorite a transaction. This call needs authentication
  */
- export const favoriteTransaction = async function() {
+ export const unfavoriteTransaction = async function() {
   // update entry, family: <authenticated address>, tags: [favorite]
 }
 

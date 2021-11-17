@@ -18,6 +18,10 @@ import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import styled from "@emotion/styled";
 import { EthereumIcon } from "./icons/Ethereum";
+import { follow, getThreeIdConnectClient, loadFollowing, unfollow } from "store/ceramicStore";
+
+
+
 function Account() {
   const { account } = useWeb3React();
 
@@ -88,9 +92,28 @@ const Header = styled.div`
   align-items: flex-end;
 `;
 
+const testingFunction = async function() {
+  const ceramicClient = await getThreeIdConnectClient();
+  await follow(ceramicClient, '0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba');
+  const followingList = await loadFollowing(ceramicClient);
+  console.log(followingList);
+
+  await unfollow(ceramicClient, '0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba');
+  const followingList = await loadFollowing(ceramicClient);
+  console.log(followingList);
+}
+
 export const WalletMetadataView = () => {
   const context = useWeb3React();
   const { active, error, activate, deactivate } = context;
+
+  React.useEffect(() => {
+
+    if (active) {
+      testingFunction(context);
+    }
+
+  }, [active, error, activate, deactivate]);
 
   const [toasts, setToast] = useToasts();
   const { copy } = useClipboard();
