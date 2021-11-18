@@ -12,8 +12,10 @@ import {
   NoEthereumProviderError,
   UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from "@web3-react/injected-connector";
+import { CeramicContextWrapper } from "../context/CeramicContext";
 import Head from "next/head";
 import * as React from "react";
+
 const getErrorMessage = (error) => {
   if (error instanceof NoEthereumProviderError) {
     return "No Ethereum browser provider detected. Please install MetaMask.";
@@ -79,8 +81,6 @@ export const FAKE_FEED = [
 ];
 
 const App = () => {
-  const context = useWeb3React();
-
   return (
     <div>
       <Head>
@@ -91,11 +91,13 @@ const App = () => {
 
       <div className={styles.container}>
         <div className={styles.header}>
-          <EthAddressSearchView />
+          {/* <EthAddressSearchView /> */}
           <WalletMetadataView />
         </div>
         <div className={styles.content}>
-          {FAKE_FEED.map((item, idx) => (
+
+          <EthAddressSearchView />
+          {/* {FAKE_FEED.map((item, idx) => (
 
               <FeedCard
                 key={idx}
@@ -107,7 +109,7 @@ const App = () => {
                 profilePath="abcd"
               />
 
-          ))}
+          ))} */}
         </div>
         {/* <Card>
           {context.error && <p>{getErrorMessage(context.error)}</p>}
@@ -128,9 +130,16 @@ const App = () => {
 };
 
 export default function wrappedProvider() {
+  const { client, setClient } = React.useState();
+
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <App />
+      {/* <CeramicContext.Provider value={{client, setClient}}>
+        <App />
+      </CeramicContext.Provider> */}
+      <CeramicContextWrapper>
+         <App />
+      </CeramicContextWrapper>
     </Web3ReactProvider>
   );
 }

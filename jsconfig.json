@@ -5,7 +5,8 @@
       "@/pages/*": ["pages/*"],
       "@/components/*": ["components/*"],
       "@/wallet/*": ["wallet/*"],
-      "@/styles/*": ["styles/*"]
+      "@/styles/*": ["styles/*"],
+      "@/context/": ["context/*"]
     },
     "noEmit": true
   }

@@ -5,6 +5,8 @@ import { Input } from "@geist-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import { useState } from "react";
+import { useCeramicContext } from "context/CeramicContext";
+import { follow } from "store/ceramicStore";
 
 export const OPENSEA_ENDPOINT = "https://api.opensea.io/api/v1";
 
@@ -19,25 +21,29 @@ const fetchAddressData = async (address, provider) => {
   const balance = await provider.getBalance(address);
   // ENS data
   const resolver = await provider.getResolver(address);
+  // if (resolver) {
+  //   const [url, avatar, ethAddress] = Promise.all([resolver.getText('url'), resolver.getText('avatar'), resolver.getAddress()]);
+  // }
   const url = resolver === null ? "" : await resolver.getText("url");
   const avatar = resolver === null ? "" : await resolver.getText("avatar");
   const ethAddress = resolver === null ? address : await resolver.getAddress();
-  const ens =
-    resolver === null ? "" : await provider.lookupAddress(ethAddress);
-  const openSeaData = await fetchOpenSeaData(avatar);
+  // const ens =
+  //   resolver === null ? "" : await provider.lookupAddress(ethAddress);
+  // const openSeaData = await fetchOpenSeaData(avatar);
   return {
     address: ethAddress,
-    ens,
+    // ens,
     balance: parseBigNumberToString(18, balance).substr(0, 4),
-    url,
-    avatar,
-    img: openSeaData.image_original_url,
+    // url,
+    // avatar,
+    // img: openSeaData.image_original_url,
   };
 };
 
 export const EthAddressSearchView = (props) => {
   const {} = props;
   const context = useWeb3React();
+  const { client } = useCeramicContext();
   const {
     connector,
     active,
@@ -57,15 +63,21 @@ export const EthAddressSearchView = (props) => {
     setUserInput(event.target.value);
   };
 
+  const handleFollowButtonClick = (e) => {
+    e.preventDefault();
+    console.log('button click with client', client, 'resolved address', resolvedAddress);
+    follow(client, resolvedAddress);
+  }
+
   const onEnterPress = async (event) => {
     console.log("key pressed", event.key);
     if (event.key === "Enter") {
       event.preventDefault();
       fetchAddressData(userInput, library).then((item) => {
         console.log(item);
-        return <pre>{JSON.stringify(item)}</pre>;
-        // setSearchAddressBalance(item.balance)
-        // setResolvedEnsAddress(item.url)
+        // return <pre>{JSON.stringify(item)}</pre>;
+        setSearchAddressBalance(item.balance);
+        setResolvedEnsAddress(item.address);
       });
       // const resolver = await library.getResolver(userInput);
       // if (active) {
@@ -106,7 +118,7 @@ export const EthAddressSearchView = (props) => {
         <div>
           <p>Address: {resolvedAddress}</p>
           <p>Ξ {searchAddressBalance}</p>
-          <button>Follow</button>
+          <button onClick={handleFollowButtonClick}>Follow</button>
         </div>
       )}
     </div>

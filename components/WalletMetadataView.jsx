@@ -29,7 +29,6 @@ import {
 } from "store/ceramicStore";
 
 
-
 function Account() {
   const { account } = useWeb3React();
 
@@ -118,14 +117,6 @@ const testingFunction = async function() {
 export const WalletMetadataView = () => {
   const context = useWeb3React();
   const { active, error, activate, deactivate } = context;
-
-  React.useEffect(() => {
-
-    if (active) {
-      testingFunction(context);
-    }
-
-  }, [active, error, activate, deactivate]);
 
   const [toasts, setToast] = useToasts();
   const { copy } = useClipboard();
