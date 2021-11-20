@@ -22,15 +22,12 @@ import {
   unfavoriteTransaction,
   unfollow,
 } from "store/ceramicStore";
-import { parseBigNumberToString } from "util/bigNumberConverter";
+import { useBalance } from "../hooks/useBalance";
 import { EthereumIcon } from "./icons/Ethereum";
-
 // TODO: rename file
-
 
 function Account() {
   const { account } = useWeb3React();
-
   return (
     <>
       {account === null
@@ -39,42 +36,6 @@ function Account() {
         ? `${account.substring(0, 6)}......${account.substring(
             account.length - 4
           )}`
-        : ""}
-    </>
-  );
-}
-
-function Balance() {
-  const { account, library, chainId } = useWeb3React();
-  const [balance, setBalance] = React.useState();
-  React.useEffect(() => {
-    if (!!account && !!library) {
-      let stale = false;
-      library
-        .getBalance(account)
-        .then((balance) => {
-          if (!stale) {
-            setBalance(balance);
-          }
-        })
-        .catch(() => {
-          if (!stale) {
-            setBalance(null);
-          }
-        });
-
-      return () => {
-        stale = true;
-        setBalance(undefined);
-      };
-    }
-  }, [account, library, chainId]);
-  return (
-    <>
-      {balance === null
-        ? "Error"
-        : balance
-        ? parseBigNumberToString(18, balance).substr(0, 4)
         : ""}
     </>
   );
@@ -150,6 +111,8 @@ export const WalletMetadataView = () => {
     });
   };
 
+  const balance = useBalance(context);
+
   const disconnectWallet = async () => {
     // deactivate(injectedConnector);
 
@@ -179,7 +142,7 @@ export const WalletMetadataView = () => {
               effect={false}
               icon={<EthereumIcon />}
             >
-              <Balance />
+              <>{balance}</>
             </Button>
             <Button
               onClick={disconnectWallet}

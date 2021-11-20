@@ -1,5 +1,6 @@
 import { isValidEthAddress } from "../../util/string-validators";
 import { retrieveNftsByAddress } from "../../lib/nft-port-api-wrapper";
+import {Web3Provider} from "ethers/providers";
 // TODO: add logging and error handling
 export default async function handler(req, res) {
   const { query } = req;
@@ -8,7 +9,7 @@ export default async function handler(req, res) {
   }
 
   const response =
-    query.hasOwnProperty("address") && isValidEthAddress(query.address)
+    query.hasOwnProperty("address")
       ? await retrieveNftsByAddress(req.query.address)
       : { data: "no data" };
 

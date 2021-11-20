@@ -12,6 +12,6 @@ export default async function handler(req, res) {
       ? await retrieveNftDetails(req.query.contract_address, req.query.token_id)
       : { data: "no data" };
 
-  // console.log(JSON.stringify(response));
+  console.log(`{nft-details: ${JSON.stringify(response)}}`);
   res.status(200).json(response);
 }

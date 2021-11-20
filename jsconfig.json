@@ -8,7 +8,8 @@
       "@/styles/*": ["styles/*"],
       "@/contexts/*": ["context/*"],
       "@store/*": ["store/*"],
-      "@services/*": ["services/*"]
+      "@services/*": ["services/*"],
+      "@/hooks/*": ["hooks/*"]
     }
   },
   "exclude": [

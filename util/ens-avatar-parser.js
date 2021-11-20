@@ -4,7 +4,7 @@ export const parseEnsAvatar = (avatarAddress) => {
 
   return {
     type,
-    contractAddress: ensAddress,
+    contract: ensAddress,
     tokenId: ensTokenId || tokenId,
     chainId: chainId || "1",
   };

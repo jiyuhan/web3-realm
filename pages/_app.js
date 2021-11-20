@@ -17,7 +17,10 @@ const Root = ({ Component, pageProps }) => {
   const [queryClient] = React.useState(() => new QueryClient());
   return (
     // <Component />
-    <Web3ReactProvider getLibrary={getLibrary}>
+    <Web3ReactProvider
+      getLibrary={getLibrary}
+      libraryName={"ethers.js" | "web3.js" | null}
+    >
       <CeramicContextWrapper>
         <QueryClientProvider client={queryClient}>
           <Hydrate state={pageProps.dehydratedState}>
