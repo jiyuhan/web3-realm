@@ -6,8 +6,27 @@
       "@/components/*": ["components/*"],
       "@/wallet/*": ["wallet/*"],
       "@/styles/*": ["styles/*"],
-      "@/context/": ["context/*"]
-    },
-    "noEmit": true
-  }
+      "@/contexts/*": ["context/*"],
+      "@store/*": ["store/*"],
+      "@services/*": ["services/*"]
+    }
+  },
+  "exclude": [
+    ".git",
+    ".app-cache",
+    ".npm",
+    ".npm-tmp",
+    "/dist",
+    "/dist*",
+    "/build",
+    "/node_modules",
+    "/node_modules*",
+    "/out",
+    "/out*",
+    "/tmp",
+    "/tmp*",
+    "**/dist/*",
+    "**/node_modules/*",
+    "/package-lock.json"
+  ]
 }

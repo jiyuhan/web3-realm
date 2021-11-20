@@ -1,21 +1,18 @@
-import { EthAddressSearchView } from "@/components/EthAddressSearchView";
-import { FeedCard } from "@/components/FeedCard";
-import { WalletMetadataView } from "@/components/WalletMetadataView";
-import styles from "@/styles/Home.module.css";
-import { Web3Provider } from "@ethersproject/providers";
-import {
-  UnsupportedChainIdError,
-  useWeb3React,
-  Web3ReactProvider,
-} from "@web3-react/core";
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import {
   NoEthereumProviderError,
   UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from "@web3-react/injected-connector";
-import { CeramicContextWrapper } from "../context/CeramicContext";
 import Head from "next/head";
 import * as React from "react";
 
+// getTxsForAddress(
+//   "0xb407e25E70CE8F9273CD9bD25Cf18a98AB151DCe"
+// ).then(console.log);
+
+// retrieveNftsByAddress("0xb407e25E70CE8F9273CD9bD25Cf18a98AB151DCe").then(
+//   console.log
+// );
 const getErrorMessage = (error) => {
   if (error instanceof NoEthereumProviderError) {
     return "No Ethereum browser provider detected. Please install MetaMask.";
@@ -29,58 +26,10 @@ const getErrorMessage = (error) => {
   }
 };
 
-const getLibrary = (provider) => {
-  const library = new Web3Provider(provider);
-  return library;
-};
-
-// fetch(ENDPOINT/following, {streamId: 342345724})
-/**
- * response = {
- * [
- * "0x3457634875624",
- * "0x3457634875624",
- * "0x3457634875624",
- * "0x3457634875624",
- * "0x3457634875624",
- * ]
- * }
- */
-// imgSrc, address, text, profilePath
-export const FAKE_FEED = [
-  {
-    address: "0x983110309620D911731Ac0932219af06091b6744",
-    ens: "brantly.eth",
-    balance: "2.46",
-    url: "http://brantly.xyz/",
-    avatar: "eip155:1/erc721:0xb7F7F6C52F2e2fdb1963Eab30438024864c313F6/2430",
-    img: "https://api.wrappedpunks.com/images/punks/2430.png",
-    text: "Swapped 25 ETH for 420.69 USDC on PussySwap v69 💸",
-    details: "",
-  },
-  {
-    address: "0x648aA14e4424e0825A5cE739C8C68610e143FB79",
-    ens: "sassal.eth",
-    balance: "69.46",
-    url: "http://jondoe.pizza/",
-    avatar: "eip155:1/erc721:0xb7F7F6C52F2e2fdb1963Eab30438024864c313F6/6571",
-    img: "https://lh3.googleusercontent.com/-w3k-j9DHgkrIJ10IJ7aNmRSawLKJW3JLtLjTH9jHyxEmgBb30KFj82YX59kQImzDZy1yiu5Gv7YyAJwfTtSKcToffSM3-OcdILkNg=w600",
-    text: "Minted a new ERC-721 token: CryptoPunk[6969] 🎨",
-    detail: "",
-  },
-  {
-    address: "0x648aA14e4424e0825A5cE739C8C686123985271",
-    ens: "krypto.eth",
-    balance: "0.87",
-    url: "http://jondoe.pizza/",
-    avatar: "eip155:1/erc721:0xb7F7F6C52F2e2fdb1963Eab30438024864c313F6/6571",
-    img: "https://lh3.googleusercontent.com/YinTK0CUDPGnoE-7RPOuSlDSO8-3WyNrpkzcOXPtKRl36yuhMGoJjLfzrCyx15bh8gCYZf33SxALC_FxxnW-tNJpUIubv4CUeAcnLDQ=s0",
-    text: "Withdrew 75% of LINK-USDT liquidity pool 🐻 📉",
-    detail: "",
-  },
-];
-
-const App = () => {
+export default function App() {
+  const web3Context = useWeb3React();
+  // TODO: add title, favicon, etc.
+  // TODO: add loading screen
   return (
     <div>
       <Head>
@@ -88,58 +37,9 @@ const App = () => {
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <div className={styles.container}>
-        <div className={styles.header}>
-          {/* <EthAddressSearchView /> */}
-          <WalletMetadataView />
-        </div>
-        <div className={styles.content}>
-
-          <EthAddressSearchView />
-          {/* {FAKE_FEED.map((item, idx) => (
-
-              <FeedCard
-                key={idx}
-                address={item.address}
-                ens={item.ens}
-                balance={item.balance}
-                img={item.img}
-                text={item.text}
-                profilePath="abcd"
-              />
-
-          ))} */}
-        </div>
-        {/* <Card>
-          {context.error && <p>{getErrorMessage(context.error)}</p>}
-          {context.active && (
-            <div>
-              <EthAddressSearchView />
-            </div>
-          )}
-        </Card> */}
-        {/* <nav className="items">NAV</nav>
-        <div className="items contents">CONTENTS</div>
-        <aside className="items">ASIDE</aside>
-        */}
-        {/* <div className={styles.footer}>FOOTER</div> */}
-      </div>
+      <h1> Connected: {web3Context.active.toString()}</h1>
+      <p>{getErrorMessage(web3Context.error)}</p>
+      <pre>{JSON.stringify(web3Context, null, 2)}</pre>
     </div>
-  );
-};
-
-export default function wrappedProvider() {
-  const { client, setClient } = React.useState();
-
-  return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      {/* <CeramicContext.Provider value={{client, setClient}}>
-        <App />
-      </CeramicContext.Provider> */}
-      <CeramicContextWrapper>
-         <App />
-      </CeramicContextWrapper>
-    </Web3ReactProvider>
   );
 }

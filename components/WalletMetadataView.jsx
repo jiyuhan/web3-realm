@@ -1,32 +1,31 @@
-import { parseBigNumberToString } from "util/bigNumberConverter";
 import { injectedConnector } from "@/wallet/connectors";
+import { useEagerConnect, useInactiveListener } from "@/wallet/hooks";
+import styled from "@emotion/styled";
 import {
-  Grid,
   Button,
-  ButtonGroup,
-  Card,
   Dot,
+  Grid,
   Spacer,
-  Link,
-  Toggle,
-  Text,
   useClipboard,
-  useToasts, Input
+  useToasts,
 } from "@geist-ui/react";
 import * as Icon from "@geist-ui/react-icons";
 import { useWeb3React } from "@web3-react/core";
+import Router from "next/router";
 import * as React from "react";
-import styled from "@emotion/styled";
-import { EthereumIcon } from "./icons/Ethereum";
 import {
-  follow,
   authenticateAndGetClient,
-  loadFollowing,
-  unfollow,
   favoriteTransaction,
+  follow,
   loadAllFavoriteTransactions,
-  unfavoriteTransaction
+  loadFollowing,
+  unfavoriteTransaction,
+  unfollow,
 } from "store/ceramicStore";
+import { parseBigNumberToString } from "util/bigNumberConverter";
+import { EthereumIcon } from "./icons/Ethereum";
+
+// TODO: rename file
 
 
 function Account() {
@@ -81,16 +80,7 @@ function Balance() {
   );
 }
 
-const Header = styled.div`
-  /* width: 400px;
-  max-width: calc(100% - 20px);
-  height: 50px;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-items: flex-end; */
-
+const Container = styled.div`
   width: 50%;
   max-width: calc(100% - 20 px);
   height: 35px;
@@ -99,24 +89,52 @@ const Header = styled.div`
   align-items: flex-end;
 `;
 
-const testingFunction = async function() {
+const testingFunction = async function () {
   const ceramicClient = await authenticateAndGetClient();
-  await follow(ceramicClient, '0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba');
+  await follow(ceramicClient, "0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba");
   await loadFollowing(ceramicClient);
 
-  await unfollow(ceramicClient, '0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba');
+  await unfollow(ceramicClient, "0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba");
   await loadFollowing(ceramicClient);
 
-  await favoriteTransaction(ceramicClient, '0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3');
+  await favoriteTransaction(
+    ceramicClient,
+    "0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3"
+  );
   await loadAllFavoriteTransactions(ceramicClient);
 
-  await unfavoriteTransaction(ceramicClient, '0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3');
+  await unfavoriteTransaction(
+    ceramicClient,
+    "0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3"
+  );
   await loadAllFavoriteTransactions(ceramicClient);
-}
+};
 
 export const WalletMetadataView = () => {
   const context = useWeb3React();
-  const { active, error, activate, deactivate } = context;
+  const {
+    connector,
+    library,
+    chainId,
+    account,
+    activate,
+    deactivate,
+    active,
+    error,
+  } = context;
+  // handle logic to recognize the connector currently being activated
+  const [activatingConnector, setActivatingConnector] = React.useState();
+  React.useEffect(() => {
+    if (activatingConnector && activatingConnector === connector) {
+      setActivatingConnector(undefined);
+    }
+  }, [activatingConnector, connector]);
+
+  // handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
+  const triedEager = useEagerConnect();
+
+  // handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
+  useInactiveListener(!triedEager || !!activatingConnector);
 
   const [toasts, setToast] = useToasts();
   const { copy } = useClipboard();
@@ -125,8 +143,23 @@ export const WalletMetadataView = () => {
     setToast({ text: "Copied to clipboard" });
   };
 
+  const connectWallet = async () => {
+    Router.push("/feed").then(() => {
+      setActivatingConnector(injectedConnector);
+      activate(injectedConnector);
+    });
+  };
+
+  const disconnectWallet = async () => {
+    // deactivate(injectedConnector);
+
+    Router.push("/").then(() => {
+      deactivate(injectedConnector);
+    });
+  };
+
   return (
-    <Header>
+    <Container>
       <Grid xs={22}>
         {active ? (
           <>
@@ -139,13 +172,17 @@ export const WalletMetadataView = () => {
             >
               <Account />
             </Button>
-            <Button auto w="25%" mx="2px" effect={false} icon={<EthereumIcon/>}>
+            <Button
+              auto
+              w="25%"
+              mx="2px"
+              effect={false}
+              icon={<EthereumIcon />}
+            >
               <Balance />
             </Button>
             <Button
-              onClick={() => {
-                deactivate(injectedConnector);
-              }}
+              onClick={disconnectWallet}
               icon={<Icon.LogOut />}
               auto
               w="30%"
@@ -158,10 +195,7 @@ export const WalletMetadataView = () => {
             w="75%"
             scale={1}
             type="success-light"
-
-            onClick={() => {
-              activate(injectedConnector);
-            }}
+            onClick={connectWallet}
           >
             Connect your wallet
           </Button>
@@ -169,6 +203,6 @@ export const WalletMetadataView = () => {
         <Spacer inline />
         <Dot type={active ? "success" : error ? "error" : "warning"} />
       </Grid>
-    </Header>
+    </Container>
   );
 };

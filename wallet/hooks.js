@@ -2,34 +2,34 @@ import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import { injectedConnector } from "./connectors";
 
-// // "Eager connect" is to store connectorId in localStorage
-// export const useEagerConnect = () => {
-//   const { activate, active } = useWeb3React();
-//   const [tried, setTried] = React.useState(false);
+// "Eager connect" is to store connectorId in localStorage
+export const useEagerConnect = () => {
+  const { activate, active } = useWeb3React();
+  const [tried, setTried] = React.useState(false);
 
-//   React.useEffect(() => {
-//     injected.isAuthorized().then((isAuthorized) => {
-//       if (isAuthorized) {
-//         activate(injected, undefined, true).catch(() => {
-//           setTried(true);
-//         });
-//       } else {
-//         setTried(true);
-//       }
-//     });
-//   // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, []);
+  React.useEffect(() => {
+    injectedConnector.isAuthorized().then((isAuthorized) => {
+      if (isAuthorized) {
+        activate(injectedConnector, undefined, true).catch(() => {
+          setTried(true);
+        });
+      } else {
+        setTried(true);
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-//   React.useEffect(() => {
-//     if (!tried && active) {
-//       setTried(true);
-//     }
-//   }, [tried, active]);
-//   return tried;
-// };
+  React.useEffect(() => {
+    if (!tried && active) {
+      setTried(true);
+    }
+  }, [tried, active]);
+  return tried;
+};
 
 export const useInactiveListener = (suppress = false) => {
-  const { active, error, activate, deactivate } = useWeb3React();
+  const { active, error, activate } = useWeb3React();
 
   React.useEffect(() => {
     const { ethereum } = window;
@@ -41,7 +41,6 @@ export const useInactiveListener = (suppress = false) => {
       };
       const handleChainChanged = (chainId) => {
         console.log(`handling 'chainChanged' event..: ${chainId}`);
-        deactivate(injectedConnector);
         activate(injectedConnector);
       };
       const handleAccountsChanged = (accounts) => {
@@ -66,5 +65,5 @@ export const useInactiveListener = (suppress = false) => {
         }
       };
     }
-  }, [active, error, suppress, activate, deactivate]);
+  }, [active, error, suppress, activate]);
 };
