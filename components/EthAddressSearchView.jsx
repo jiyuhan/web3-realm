@@ -1,5 +1,3 @@
-// import { injectedConnector } from "@/wallet/connectors";
-// import { NETWORK_NAME_TO_CHAIN_ID } from "@/pages/constants/network";
 import styled from "@emotion/styled";
 import { Button, Grid, Input } from "@geist-ui/react";
 import { useWeb3React } from "@web3-react/core";

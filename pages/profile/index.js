@@ -8,6 +8,7 @@ import useSWR from "swr";
 import { useCeramicContext } from "../../contexts/CeramicContext";
 import { useEnsData } from "../../hooks/useEnsData";
 import { fetcher } from "../../lib/fetcher";
+
 export default function Profile() {
   const web3Context = useWeb3React();
 
@@ -16,6 +17,7 @@ export default function Profile() {
   const [loading, setLoading] = React.useState(false);
   const [userData, setUserData] = React.useState({});
   const [mounted, setMounted] = React.useState(false);
+  const [portfolioValue, setPortfolioValue] = React.useState();
   const queryParams = new URLSearchParams({ account });
   //const api_route = `/api/nft/account?${queryParams}`;
   const { data, error } = useSWR(
@@ -29,11 +31,18 @@ export default function Profile() {
     provider: library,
     address: account,
   });
-    console.log(ens);
+  console.log(ens);
 
   React.useEffect(() => {
     setMounted(true);
     setLoading(true);
+    const getPortfolioValue = async () => {
+      const response = await fetcher(
+        `/api/portfolio-value/?address=${account}`
+      );
+      setPortfolioValue(response);
+    };
+    getPortfolioValue();
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
@@ -60,7 +69,7 @@ export default function Profile() {
       </Grid>
       <Grid xs={12}>
         <Card shadow width="100%">
-          <pre> {JSON.stringify(userData, null, 2)}</pre>
+          <pre> {JSON.stringify(portfolioValue, null, 2)}</pre>
         </Card>
       </Grid>
       <Grid xs={24}>

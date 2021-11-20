@@ -12,6 +12,6 @@ export default async function handler(req, res) {
       ? await getHistoricalPortfolioValue(req.query.address)
       : { data: "no data" };
 
-  console.log(JSON.stringify(query));
+  console.log("portfolio value", JSON.stringify(response));
   res.status(200).json(response);
 }
