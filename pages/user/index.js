@@ -12,12 +12,11 @@ import { useBalance } from "../../hooks/useBalance";
 import { useEnsData } from "../../hooks/useEnsData";
 import { fetcher } from "../../lib/fetcher";
 
-const SearchedUser = () => {
+export default function Profile() {
   const web3Context = useWeb3React();
   const { library, chainId } = web3Context;
   const { client } = useCeramicContext();
   const [loading, setLoading] = React.useState(false);
-  const [userData, setUserData] = React.useState({});
   const router = useRouter();
   const { address } = router.query;
   const [mounted, setMounted] = React.useState(false);
@@ -50,8 +49,6 @@ const SearchedUser = () => {
     );
     follow(client, address);
   };
-
-  console.log("ens", ens, avatar, url);
   if (error) return <div>Failed to load users</div>;
   if (!data || loading)
     return (
@@ -65,7 +62,7 @@ const SearchedUser = () => {
       <Grid xs={12}>
         <Grid.Container gap={2} justify="center" width="70%">
           <Grid xs={24}>
-            {balance}
+
             <NftImage avatar={avatar} />
           </Grid>
           <Grid xs={12}>
@@ -77,8 +74,9 @@ const SearchedUser = () => {
       </Grid>
       <Grid xs={12}>
         <Card shadow width="100%">
-          {(ens, avatar)}
-          <pre> {JSON.stringify(userData, null, 2)}</pre>
+          <pre>balance:{balance}</pre>
+          <pre>site: {url}</pre>
+          <pre> {JSON.stringify(data, null, 2)}</pre>
         </Card>
       </Grid>
       <Grid xs={24}>
@@ -91,4 +89,3 @@ const SearchedUser = () => {
     </Grid.Container>
   );
 };
-export default SearchedUser;

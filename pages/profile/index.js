@@ -59,10 +59,7 @@ export default function Profile() {
       <Grid xs={12}>
         <Grid.Container gap={2} justify="center" width="70%">
           <Grid xs={24}>
-            <NftImage
-              contract={userData?.avatar?.contractAddress}
-              tokenId={userData?.avatar?.tokenId}
-            />
+            <NftImage avatar={avatar} />
           </Grid>
           <Grid xs={12}></Grid>
         </Grid.Container>
