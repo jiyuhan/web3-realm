@@ -1,11 +1,12 @@
-import { FeedCard } from "@/components/FeedCard";
 import { loadFollowing } from "@store/ceramicStore";
 import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import { useCeramicContext } from "../../contexts/CeramicContext";
-import { Card, Grid, Link, Badge } from "@geist-ui/react";
+import { Card, Grid, Link, Badge, Spacer } from "@geist-ui/react";
 import { parseBigNumberToString } from "util/bigNumberConverter";
 import { ArrowRight } from '@geist-ui/react-icons'
+import { useEnsData } from "../../hooks/useEnsData";
+import { FeedCard } from "../../components/FeedCard";
 
 export const FAKE_FEED = [
   {
@@ -51,7 +52,7 @@ export default function Feed() {
 
   React.useEffect(() => {
     (async () => {
-      if (client) {
+      if (client && library) {
         const { following } = await loadFollowing(client);
         setFollowing(following);
         library.on("block", async (blockNumber) => {
@@ -98,7 +99,7 @@ export default function Feed() {
         library.removeAllListeners('block');
       }
     }
-  }, [client]);
+  }, [client, library]);
 
   return (
     <div>
@@ -117,23 +118,12 @@ export default function Feed() {
         ? <p>Currently you are following no one. Use the search bar to find more users to follow.</p>
         : followingTransactions.length === 0
         ? <p>Currently there is no events observed, please wait...</p>
-        : followingTransactions.map((tx) => <Card>
-          <Grid.Container gap={2} justify="center">
-            <Grid xs><Link href={`https://etherscan.io/address/${tx.from}`}>{tx.from.substring(0, 8)}</Link></Grid>
-            <Grid xs><ArrowRight /></Grid>
-            <Grid xs><Link href={`https://etherscan.io/address/${tx.to}`}>{tx.to.substring(0, 8)}</Link></Grid>
-          </Grid.Container>
-          <pre>{tx.to}</pre>
-          <Grid.Container gap={2} justify="center">
-            <Grid xs>Value</Grid>
-            <Grid xs>Ξ {parseBigNumberToString(18, tx.value)}</Grid>
-          </Grid.Container>
-          <Grid.Container gap={2} justify="center">
-            <Grid xs>Block confirmations</Grid>
-            <Grid xs><Badge>{tx.confirmations}</Badge></Grid>
-          </Grid.Container>
-          {new Date(tx.timestamp * 1000).toDateString()} {new Date(tx.timestamp * 1000).toLocaleTimeString()}
-        </Card>)
+        : followingTransactions.map((tx) =>
+          <div key={tx.hash}>
+            <FeedCard transactionDetail={tx} />
+            <Spacer />
+          </div>
+          )
       }
     </div>
   );

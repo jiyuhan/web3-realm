@@ -7,31 +7,25 @@ import {
   Link,
   Spacer,
   Text,
+  Badge,
+  Card
 } from "@geist-ui/react";
+import NftImage from "@/components/nft-image";
 import * as Icon from "@geist-ui/react-icons";
+import { useEnsData } from "../hooks/useEnsData";
+import { parseBigNumberToString } from "util/bigNumberConverter";
+import { EnsUser } from './EnsUser'
+import { ArrowRight } from '@geist-ui/react-icons'
 import * as React from "react";
-const following = {
-  address: "0xb407e25e70ce8f9273cd9bd25cf18a98ab151dce",
-  following: [
-    {
-      address: "0x26437d312fb36bdd7ac9f322a6d4ccfe0c4fa313",
-      ens: "bearbear.eth",
-      img: "https://bearimage.png",
-    },
-    {
-      address: "0x26437d312fiyfdd7ac9f322a6d4ccfe0c4fa313",
-      ens: "bullbull.eth",
-      img: "https://bullimage.png",
-    },
-  ],
-};
+import { useWeb3React } from "@web3-react/core";
 
-export const FeedCard = (props) => {
-  const { address, ens, img, text, profilePath, balance } = props;
+
+export const FeedCard = ({ transactionDetail }) => {
+  const { library }  = useWeb3React();
 
   return (
     <>
-      <Fieldset style={{ width: "480px", maxWidth: "calc(100% - 20px)" }}>
+      {/* <Fieldset style={{ width: "480px", maxWidth: "calc(100% - 20px)" }}>
         <Fieldset.Content py="8pt" px="10pt">
           <Grid.Container alignItems="center" justify="flex-start">
             <Grid w="33%">
@@ -80,7 +74,49 @@ export const FeedCard = (props) => {
           </Button>
         </Fieldset.Footer>
       </Fieldset>
-      <Spacer inline h="12pt" />
+      <Spacer inline h="12pt" /> */}
+      <Card shadow style={{minWidth: '600px'}}>
+        <Spacer />
+        <Grid.Container gap={2} justify="center">
+          <EnsUser address={transactionDetail.from} />
+          {/* <NftImage avatar={ensFrom.avatar} isProfilePic={true} />
+          <Grid xs><Link href={`https://etherscan.io/address/${transactionDetail.from}`}>{ensFrom.ens || transactionDetail.from.substring(0, 8)}</Link></Grid> */}
+          <Grid style={{ minWidth: '300px', textAlign: 'center' }}><ArrowRight /></Grid>
+
+          {/* <Divider style={{minWidth: '300px'}} /> */}
+          <EnsUser address={transactionDetail.to} />
+          {/* <NftImage avatar={ensTo.avatar} isProfilePic={true} />
+          <Grid xs><Link href={`https://etherscan.io/address/${transactionDetail.to}`}>{ensTo.ens || transactionDetail.to.substring(0, 8)}</Link></Grid> */}
+        </Grid.Container>
+
+        <Link href={`https://etherscan.io/tx/${transactionDetail.hash}`} >
+          <Text h6 type="secondary">{transactionDetail.hash}</Text>
+        </Link>
+
+        <Grid.Container gap={2} justify="center">
+          {/* <Grid md></Grid> */}
+          <Grid xs>Value</Grid>
+          <Grid xs>Ξ {parseBigNumberToString(18, transactionDetail.value).substring(0, 6)}</Grid>
+        </Grid.Container>
+        <Grid.Container gap={2} justify="center">
+          {/* <Grid md></Grid> */}
+          <Grid xs>Block confirmations</Grid>
+          <Grid xs><Badge>{transactionDetail.confirmations}</Badge></Grid>
+        </Grid.Container>
+        <Grid.Container gap={2} justify="center">
+          {/* <Grid md></Grid> */}
+          <Grid xs>Transaction type</Grid>
+          <Grid xs>{transactionDetail.data === '0x' ? 'Transaction' : 'Smart contract'}</Grid>
+        </Grid.Container>
+        <Grid.Container gap={2} justify="center">
+          {/* <Grid md></Grid> */}
+          <Grid xs>Gas price</Grid>
+          <Grid xs>{parseBigNumberToString(9, transactionDetail.gasPrice)} GWEI</Grid>
+        </Grid.Container>
+        <Card.Footer>
+          {new Date(transactionDetail.timestamp * 1000).toDateString()} {new Date(transactionDetail.timestamp * 1000).toLocaleTimeString()}
+        </Card.Footer>
+      </Card>
     </>
   );
 };

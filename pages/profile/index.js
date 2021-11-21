@@ -42,20 +42,20 @@ export default function Profile() {
     const response = await fetcher(`/api/portfolio-value/?address=${account}`);
     setPortfolioValue(response);
   };
-  const getFollowing = async () => {
-    setFollowing([]);
-  };
+
   React.useEffect(() => {
     (async () => {
       if (client) {
         const response = await loadFollowing(client);
         const { following } = response;
-        console.log(following);
         setFollowing(following);
       }
     })();
     setMounted(true);
-    getFollowing();
+
+    return () => {
+      setMounted(false);
+    }
   }, [client, loading]);
 
   if (loading)
