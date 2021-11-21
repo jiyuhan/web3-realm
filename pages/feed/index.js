@@ -1,14 +1,11 @@
 import { FeedCard } from "@/components/FeedCard";
+import { loadFollowing } from "@store/ceramicStore";
+import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
-import {
-  authenticateAndGetClient,
-  favoriteTransaction,
-  follow,
-  loadAllFavoriteTransactions,
-  loadFollowing,
-  unfavoriteTransaction,
-  unfollow,
-} from "store/ceramicStore";
+import { useCeramicContext } from "../../contexts/CeramicContext";
+import { Card, Grid } from "@geist-ui/react";
+
+
 export const FAKE_FEED = [
   {
     address: "0x983110309620D911731Ac0932219af06091b6744",
@@ -43,31 +40,35 @@ export const FAKE_FEED = [
 ];
 
 export default function Feed() {
-  const ceramicClient =  authenticateAndGetClient();
-  const testingFunction = async function () {
-    await follow(ceramicClient, "0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba");
-    await loadFollowing(ceramicClient);
+  const web3Context = useWeb3React();
+  const { library } = web3Context;
 
-    await unfollow(ceramicClient, "0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba");
-    await loadFollowing(ceramicClient);
+  const { client } = useCeramicContext();
 
-    await favoriteTransaction(
-      ceramicClient,
-      "0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3"
-    );
-    await loadAllFavoriteTransactions(ceramicClient);
+  const [followingTransactions, setFollowingTransactions] = React.useState([]);
 
-    await unfavoriteTransaction(
-      ceramicClient,
-      "0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3"
-    );
-    await loadAllFavoriteTransactions(ceramicClient);
-  };
-  
+  React.useEffect(() => {
+    (async () => {
+      if (client) {
+        const { following } = await loadFollowing(client);
+        library.on("block", async (blockNumber) => {
+          console.log(blockNumber);
+          const allBlockInfo = await library.getBlockWithTransactions(blockNumber);
+          console.log(allBlockInfo);
+
+          const followingTransactions = allBlockInfo.transactions.filter((transaction) => {
+            return following.includes(transaction.to) || following.includes(transaction.from);
+          });
+
+          setFollowingTransactions(followingTransactions);
+      })
+      }
+    })();
+  }, [client]);
 
   return (
     <div>
-      {FAKE_FEED.map((item, idx) => (
+      {/* {FAKE_FEED.map((item, idx) => (
         <FeedCard
           key={idx}
           address={item.address}
@@ -77,7 +78,13 @@ export default function Feed() {
           text={item.text}
           profilePath="abcd"
         />
-      ))}
+      ))} */}
+      {followingTransactions.length === 0
+        ? <p>No events, follow more people?</p>
+        : followingTransactions.map((tx) => <Card>
+          <pre>{JSON.stringify(tx, null, 2)}</pre>
+        </Card>)
+      }
     </div>
   );
 }
