@@ -39,12 +39,15 @@ export default function Profile() {
     fetcher
   );
 
+
   const transactionsDetail = transactionsForAddress.data;
   const transactionsError = transactionsForAddress.error;
 
   const txsData = transactionsDetail?.data.items || [];
 
   React.useEffect(() => {
+
+
     (async () => {
       if (client) {
         if (loading) {
