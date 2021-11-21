@@ -1,3 +1,4 @@
 import * as React from "react";
 
-export const Following = () => <h1>Hello following</h1>;
+const Following = () => <h1>Hello following</h1>;
+export default Following;
