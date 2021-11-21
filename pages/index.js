@@ -6,6 +6,7 @@ import {
 } from "@web3-react/injected-connector";
 import Head from "next/head";
 import * as React from "react";
+import {Display, Image, Grid, Text} from '@geist-ui/react';
 
 const getErrorMessage = (error) => {
   if (error instanceof NoEthereumProviderError) {
@@ -32,9 +33,16 @@ export default function App() {
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1> Connected: {web3Context.active.toString()}</h1>
-      <p>{getErrorMessage(web3Context.error)}</p>
-      <pre>{JSON.stringify(web3Context, null, 2)}</pre>
+      <Display
+        shadow
+        caption="This is a demo."
+      >
+        <Image
+          alt=""
+
+          src="https://cdn.discordapp.com/attachments/874767980423159831/911775013353427025/unknown.png"
+        />
+      </Display>
     </div>
   );
 }

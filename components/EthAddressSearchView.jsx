@@ -9,8 +9,9 @@ import { useState } from "react";
 const Container = styled.div`
   height: 35px;
   display: flex;
-  flex-direction: column;
-  width: 50%;
+  flex-direction: row;
+  width: 100%;
+  max-width: calc(100% - 20 px);
 `;
 export const EthAddressSearchView = (props) => {
   const {} = props;
@@ -57,8 +58,8 @@ export const EthAddressSearchView = (props) => {
 
   return (
     <Container>
-      <Grid.Container direction="row" gap={1.5}>
-        <Grid md={15}>
+      <Grid.Container justify="center" gap={1.5}>
+        <Grid xs={14}>
           <Input
             mx="5px"
             w="100%"
@@ -87,19 +88,5 @@ export const EthAddressSearchView = (props) => {
         </Grid>
       </Grid.Container>
     </Container>
-    // <div>
-    //   <Input
-    //     placeholder="Type eth or ENS address here"
-    //     onInput={onSearchInput}
-    //     onKeyPress={onEnterPress}
-    //   />
-    //   {searchAddressBalance !== null && (
-    //   <div>
-    //     <p>Address: {resolvedAddress}</p>
-    //     <p>Ξ {searchAddressBalance}</p>
-    //     <button onClick={handleFollowButtonClick}>Follow</button>
-    //   </div>
-    //   )}
-    // </div>
   );
 };

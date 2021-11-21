@@ -7,7 +7,7 @@ const Container = styled.div`
   height: 35px;
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 15%;
 `;
 
 // TODO: styling for the button
@@ -22,7 +22,7 @@ export const RoutingButton = (props) => {
 
   return (
     <Container>
-      <Grid.Container direction="row" gap={1.5}>
+      <Grid.Container direction="row" gap={1} justify="center">
         <Grid>
           <Button
             auto
