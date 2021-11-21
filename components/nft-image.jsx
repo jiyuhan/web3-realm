@@ -40,9 +40,9 @@ export default function NftImage({ avatar, isProfilePic }) {
         <img
           src={image}
           style={{
-            height: "300px",
-            width: "300px",
-            objectFit: "cover",
+            height: "150px",
+            width: "150px",
+            // objectFit: "cover",
           }}
         />
       )}

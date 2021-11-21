@@ -7,6 +7,7 @@ import {
 import Head from "next/head";
 import * as React from "react";
 import {Display, Image, Grid, Text} from '@geist-ui/react';
+// import logo from './tweether_logo.png';
 
 const getErrorMessage = (error) => {
   if (error instanceof NoEthereumProviderError) {
@@ -33,15 +34,8 @@ export default function App() {
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Display
-        shadow
-        caption="This is a demo."
-      >
-        <Image
-          alt=""
-
-          src="https://cdn.discordapp.com/attachments/874767980423159831/911775013353427025/unknown.png"
-        />
+      <Display>
+        <Image alt="logo" src={"/tweether_logo.png"} />
       </Display>
     </div>
   );
