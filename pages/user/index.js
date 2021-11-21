@@ -1,7 +1,7 @@
 import { LoadingUI } from "@/components/loading";
 import NftImage from "@/components/nft-image";
 import ReadableTx from "@/components/readable-tx";
-import { Button, Card, Grid } from "@geist-ui/react";
+import { Button, Card, Grid, Spacer } from "@geist-ui/react";
 import * as Icon from "@geist-ui/react-icons";
 import {
   follow,
@@ -15,7 +15,7 @@ import * as React from "react";
 import useSWR from "swr";
 import { useCeramicContext } from "../../contexts/CeramicContext";
 import { useBalance } from "../../hooks/useBalance";
-import { useEnsData } from "../../hooks/useEnsData";
+import { EnsUser } from "../../components/EnsUser";
 import { fetcher } from "../../lib/fetcher";
 
 export default function Profile() {
@@ -32,7 +32,6 @@ export default function Profile() {
 
   const [resolvedName, setResolvedName] = React.useState();
 
-  const { ens, url, avatar } = useEnsData({ provider: library, address });
   const balance = useBalance({ account: address, library, chainId });
 
   const transactionsForAddress = useSWR(
@@ -114,6 +113,12 @@ export default function Profile() {
     return <div>Failed to load users</div>;
   }
 
+  if (!client || !library) {
+    return <>
+      Connect to your wallet to view user data
+    </>;
+  }
+
   if (!transactionsDetail || !client) {
     return (
       <div>
@@ -123,17 +128,11 @@ export default function Profile() {
   }
 
   return (
-    <Grid.Container
-      gap={0.2}
-      justify="center"
-      direction="row"
-      height="100%"
-      width="70%"
-    >
-      {console.log("avatar: ", avatar)}
-      <Grid md={24} justify="center">
-        <NftImage avatar={avatar} />
-      </Grid>
+    <Card>
+      <EnsUser address={address} />
+      <p>Ξ {balance}</p>
+      <Spacer />
+      <Spacer />
       <Grid md={24} justify="center">
         {(followingList ? followingList.includes(resolvedName) : false) ? (
           <Button
@@ -161,15 +160,6 @@ export default function Profile() {
           </Button>
         )}
       </Grid>
-
-      <Grid xs={12}>
-        <Card shadow width="100%">
-          <pre>Balance: {balance}</pre>
-          <pre>Ethereum Address: {resolvedName}</pre>
-          <pre>Site: {url}</pre>
-          {/* <pre> {JSON.stringify(data[0], null, 2)}</pre> */}
-        </Card>
-      </Grid>
-    </Grid.Container>
+    </Card>
   );
 }
