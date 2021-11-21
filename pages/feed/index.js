@@ -46,24 +46,49 @@ export default function Feed() {
   const { client } = useCeramicContext();
 
   const [followingTransactions, setFollowingTransactions] = React.useState([]);
+  const [following, setFollowing] = React.useState([]);
 
   React.useEffect(() => {
     (async () => {
       if (client) {
         const { following } = await loadFollowing(client);
+        setFollowing(following);
         library.on("block", async (blockNumber) => {
           console.log(blockNumber);
           const allBlockInfo = await library.getBlockWithTransactions(blockNumber);
           console.log(allBlockInfo);
 
-          const followingTransactions = allBlockInfo.transactions.filter((transaction) => {
-            return following.includes(transaction.to) || following.includes(transaction.from);
-          });
+          const newTxs = allBlockInfo.transactions
+            .filter((transaction) => {
+              return following.includes(transaction.to) || following.includes(transaction.from);
+            })
+            .map((transaction) => ({
+              ...transaction,
+              timestamp: allBlockInfo.timestamp
+            }));
 
 
 
           setFollowingTransactions((previousFollowingTransactions) => {
-            return followingTransactions
+            const transactions = [];
+            for (let prevIndex in previousFollowingTransactions) {
+              for (let curIndex in newTxs) {
+                if (newTxs[curIndex].hash === previousFollowingTransactions[prevIndex].hash) {
+                  transactions.push(newTxs[curIndex]);
+                  delete previousFollowingTransactions[prevIndex];
+                  delete newTxs[curIndex]
+                }
+              }
+            }
+            for (const prevTx of previousFollowingTransactions) {
+              transactions.push(prevTx);
+            }
+            for (const curTx of newTxs) {
+              transactions.push(curTx);
+            }
+
+            transactions.sort((a, b) => b.timestamp - a.timestamp);
+            return transactions.slice(0, 50);
           });
       })
       }
@@ -89,8 +114,10 @@ export default function Feed() {
           profilePath="abcd"
         />
       ))} */}
-      {followingTransactions.length === 0
-        ? <p>No events, follow more people?</p>
+      {(!following || following.length === 0)
+        ? <p>Currently you are following no one. Use the search bar to find more users to follow.</p>
+        : followingTransactions.length === 0
+        ? <p>Currently there is no events observed, please wait...</p>
         : followingTransactions.map((tx) => <Card>
           <pre>{JSON.stringify(tx, null, 2)}</pre>
         </Card>)
