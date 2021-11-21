@@ -1,7 +1,7 @@
 import { LoadingUI } from "@/components/loading";
 import NftImage from "@/components/nft-image";
 import ReadableTx from "@/components/readable-tx";
-import { Card, Grid, Text } from "@geist-ui/react";
+import { Card, Grid, Text, Link, Note } from "@geist-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import useSWR from "swr";
@@ -67,7 +67,22 @@ export default function Profile() {
 
   return (
     <div>
-      <NftImage avatar={avatar} />
+      {ens ? (
+        <>
+          <Text h1>{`Hi, ${ens}`}</Text>
+          <NftImage avatar={avatar} />{" "}
+        </>
+      ) : (
+        <Note>
+          <Text h5>
+            You don't seem to have a primary ENS domain to serve as your web3
+            profile. Learn more{" "}
+            <Link color href="https://ens.domains/" target="_blank">
+              here.
+            </Link>
+          </Text>
+        </Note>
+      )}
       <br />
       <Text h1>Following</Text>
       <br />
