@@ -90,8 +90,7 @@ export default function Profile() {
     );
 
     if (client) {
-      const resolvedAddress = await library.resolveName(address);
-      follow(client, resolvedAddress);
+      follow(client, resolvedName);
       setLoading(true);
     }
   };
@@ -106,7 +105,7 @@ export default function Profile() {
     );
 
     if (client) {
-      unfollow(client, address);
+      unfollow(client, resolvedName);
       setLoading(true);
     }
   };
@@ -144,7 +143,7 @@ export default function Profile() {
             w="305px"
             h="40px"
             shadow
-            loading={loading}
+            loading={loading || !resolvedName}
             onClick={handleUnfollowClick}
           >
             Unfollow
@@ -155,7 +154,7 @@ export default function Profile() {
             w="305px"
             h="40px"
             shadow
-            loading={loading}
+            loading={loading || !resolvedName}
             onClick={handleFollowButtonClick}
           >
             Follow
