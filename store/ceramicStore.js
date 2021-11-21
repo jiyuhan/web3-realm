@@ -143,6 +143,10 @@ const add = async function(ceramicClient, tag, item) {
   if (!retrievedDoc.content
     || Object.keys(retrievedDoc.content).length === 0
   ) {
+    if (ceramicClient.signedInEthAddress === item) {
+      throw new Error('You cannot follow yourself');
+    }
+
     return await retrievedDoc.update(
       { [tag]: [item]},
       { family: ceramicClient.signedInEthAddress, tags: [tag]},

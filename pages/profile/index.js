@@ -8,6 +8,8 @@ import useSWR from "swr";
 import { useCeramicContext } from "../../contexts/CeramicContext";
 import { useEnsData } from "../../hooks/useEnsData";
 import { fetcher } from "../../lib/fetcher";
+import { follow, loadFollowing, unfollow, detectFollowListChange } from "@store/ceramicStore";
+
 
 export default function Profile() {
   const web3Context = useWeb3React();
@@ -39,12 +41,19 @@ export default function Profile() {
     setFollowing([]);
   };
   React.useEffect(() => {
+    (async () => {
+      if (client) {
+        const response = await loadFollowing(client);
+        const { following } = response;
+        setFollowing(following);
+      }
+    })();
     setMounted(true);
     setLoading(true);
     getPortfolioValue();
     getFollowing();
     setTimeout(() => setLoading(false), 1000);
-  }, []);
+  }, [client]);
 
   if (error) return <div>Failed to load users</div>;
   if (!data || loading)
@@ -64,11 +73,14 @@ export default function Profile() {
           <Grid xs={12}></Grid>
         </Grid.Container>
       </Grid>
-      <Grid xs={12}>
+      {following && following.map((address) => {
+        return <Grid xs={12}>
         <Card shadow width="100%">
-          <pre> {JSON.stringify(getFollowing, null, 2)}</pre>
+          <pre> {JSON.stringify(address, null, 2)}</pre>
         </Card>
       </Grid>
+      })}
+
       <Grid xs={24}>
         {/* TODO: map txsData to ReadableTx */}
         {JSON.stringify(data)}
