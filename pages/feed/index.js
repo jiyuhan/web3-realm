@@ -70,7 +70,9 @@ export default function Feed() {
     })();
 
     return () => {
-      library.removeAllListeners('block');
+      if (library) {
+        library.removeAllListeners('block');
+      }
     }
   }, [client]);
 
