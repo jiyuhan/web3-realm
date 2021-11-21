@@ -75,7 +75,7 @@ export default function Profile() {
       ) : (
         <Note>
           <Text h5>
-            You don't seem to have a primary ENS domain to serve as your web3
+            You don&apos;t seem to have a primary ENS domain to serve as your web3
             profile. Learn more{" "}
             <Link color href="https://ens.domains/" target="_blank">
               here.
@@ -88,7 +88,7 @@ export default function Profile() {
       <br />
       {following &&
         following.map((address) => {
-          return <FollowCard address={address} />;
+          return <FollowCard key={address} address={address} />;
         })}
     </div>
   );
