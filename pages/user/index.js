@@ -3,7 +3,7 @@ import NftImage from "@/components/nft-image";
 import ReadableTx from "@/components/readable-tx";
 import { Button, Card, Grid } from "@geist-ui/react";
 import * as Icon from "@geist-ui/react-icons";
-import { follow } from "@store/ceramicStore";
+import { follow, loadFollowing, unfollow } from "@store/ceramicStore";
 import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/router";
 import * as React from "react";
@@ -12,6 +12,7 @@ import { useCeramicContext } from "../../contexts/CeramicContext";
 import { useBalance } from "../../hooks/useBalance";
 import { useEnsData } from "../../hooks/useEnsData";
 import { fetcher } from "../../lib/fetcher";
+
 export default function Profile() {
   const web3Context = useWeb3React();
   const { library, chainId } = web3Context;
@@ -22,7 +23,7 @@ export default function Profile() {
   const [mounted, setMounted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const { followed, setFollowed } = React.useState(false);
+  const[ followed, setFollowed ] = React.useState(false);
 
   const { ens, url, avatar } = useEnsData({ provider: library, address });
   const balance = useBalance({ account: address, library, chainId });
@@ -34,12 +35,24 @@ export default function Profile() {
   const txsData = data ? data.data.items : [];
 
   React.useEffect(() => {
+    (async () => {
+      const response = await loadFollowing(client);
+      const { following } = response;
+      console.log(
+        "loadFollowing",
+        following[0],
+        address,
+        following.includes(address)
+      );
+      const isFollowed = following.includes(address);
+      setFollowed(isFollowed);
+    })();
     setMounted(true);
     setLoading(true);
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
-  const handleFollowButtonClick = (e) => {
+  const handleFollowButtonClick = async (e) => {
     e.preventDefault();
     console.log(
       "button click with client",
@@ -48,6 +61,17 @@ export default function Profile() {
       address
     );
     follow(client, address);
+  };
+
+  const handleUnfollowClick = async (event) => {
+    event.preventDefault();
+    console.log(
+      "button click with client",
+      client,
+      "resolved address",
+      address
+    );
+    unfollow(client, address);
   };
   if (error) return <div>Failed to load users</div>;
   if (!data || loading)
@@ -78,6 +102,7 @@ export default function Profile() {
             h="40px"
             shadow
             loading={loading}
+            onClick={handleUnfollowClick}
           >
             Unfollow
           </Button>
