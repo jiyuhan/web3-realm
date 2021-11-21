@@ -1,15 +1,14 @@
 import { LoadingUI } from "@/components/loading";
 import NftImage from "@/components/nft-image";
 import ReadableTx from "@/components/readable-tx";
-import { Card, Grid } from "@geist-ui/react";
+import { Grid } from "@geist-ui/react";
+import { loadFollowing } from "@store/ceramicStore";
 import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import useSWR from "swr";
 import { useCeramicContext } from "../../contexts/CeramicContext";
 import { useEnsData } from "../../hooks/useEnsData";
 import { fetcher } from "../../lib/fetcher";
-import { follow, loadFollowing, unfollow, detectFollowListChange } from "@store/ceramicStore";
-
 
 export default function Profile() {
   const web3Context = useWeb3React();
@@ -73,13 +72,13 @@ export default function Profile() {
           <Grid xs={12}></Grid>
         </Grid.Container>
       </Grid>
-      {following && following.map((address) => {
+      {/* {following && following.map((address) => {
         return <Grid xs={12}>
         <Card shadow width="100%">
           <pre> {JSON.stringify(address, null, 2)}</pre>
         </Card>
       </Grid>
-      })}
+      })} */}
 
       <Grid xs={24}>
         {/* TODO: map txsData to ReadableTx */}
