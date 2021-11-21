@@ -3,7 +3,7 @@ import NftImage from "@/components/nft-image";
 import ReadableTx from "@/components/readable-tx";
 import { Button, Card, Grid } from "@geist-ui/react";
 import * as Icon from "@geist-ui/react-icons";
-import { follow, loadFollowing, unfollow } from "@store/ceramicStore";
+import { follow, loadFollowing, unfollow, detectFollowListChange } from "@store/ceramicStore";
 import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/router";
 import * as React from "react";
@@ -23,36 +23,49 @@ export default function Profile() {
   const [mounted, setMounted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const[ followed, setFollowed ] = React.useState(false);
+  const[ followingList, setFollowingList ] = React.useState();
 
   const { ens, url, avatar } = useEnsData({ provider: library, address });
   const balance = useBalance({ account: address, library, chainId });
 
-  const { data, error } = useSWR(
+  const transactionsForAddress = useSWR(
     mounted ? `/api/address-txs/?address=${address}` : null,
     fetcher
   );
-  const txsData = data ? data.data.items : [];
+
+  const transactionsDetail = transactionsForAddress.data;
+  const transactionsError = transactionsForAddress.error;
+
+  const txsData = transactionsDetail?.data.items || [];
 
   React.useEffect(() => {
+
     (async () => {
       if (client) {
-        const response = await loadFollowing(client);
-        const { following } = response;
-        console.log(
-          "loadFollowing",
-          following[0],
-          address,
-          following.includes(address)
-        );
-        const isFollowed = following.includes(address);
-        setFollowed(isFollowed);
+        if (loading) {
+          try {
+            const response = await detectFollowListChange(client, client.signedInEthAddress, followingList, 10000);
+            setFollowingList(response.following);
+            setLoading(false);
+          } catch (error) {
+            console.error('Error detected', error);
+            // no change detected after timeout,
+            setLoading(false);
+          }
+        } else {
+          const response = await loadFollowing(client);
+          const { following } = response;
+          setFollowingList(following);
+        }
       }
     })();
+
     setMounted(true);
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+
+    return () => {
+      setMounted(false);
+    }
+  }, [client, loading]);
 
   const handleFollowButtonClick = async (e) => {
     e.preventDefault();
@@ -65,6 +78,7 @@ export default function Profile() {
 
     if (client) {
       follow(client, address);
+      setLoading(true);
     }
   };
 
@@ -79,15 +93,21 @@ export default function Profile() {
 
     if (client) {
       unfollow(client, address);
+      setLoading(true);
     }
   };
-  if (error) return <div>Failed to load users</div>;
-  if (!data || loading)
+
+  if (transactionsError) {
+    return <div>Failed to load users</div>;
+  }
+
+  if (!transactionsDetail || !client) {
     return (
       <div>
         Loading... <LoadingUI />
       </div>
     );
+  }
 
   return (
     <Grid.Container
@@ -101,7 +121,7 @@ export default function Profile() {
         <NftImage avatar={avatar} />
       </Grid>
       <Grid md={24} justify="center">
-        {followed ? (
+        {(followingList ? followingList.includes(address) : false) ? (
           <Button
             icon={<Icon.UserX />}
             type="error"

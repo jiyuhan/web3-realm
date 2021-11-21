@@ -38,6 +38,25 @@ export const authenticateAndGetClient = async function() {
   return null;
 }
 
+const waitMs = (ms) => new Promise((res) => setTimeout(res, ms));
+
+export const detectFollowListChange = async (ceramicClient, forAddress, knownFollowingList, timeoutMs) => {
+  const timestamp = Date.now();
+	const response = await loadFollowingForAddress(ceramicClient, forAddress);
+  if (response.following.length !== knownFollowingList.length) {
+    return response;
+  } else {
+    if (timeoutMs <= Date.now() - timestamp) {
+      throw new Error('No change detected');
+    }
+
+    await waitMs(1000);
+
+    return detectFollowListChange(ceramicClient, forAddress, knownFollowingList, timeoutMs - (Date.now() - timestamp));
+  }
+}
+
+
 /**
  * Follow an address. This call needs authentication
  */
@@ -87,7 +106,6 @@ export const favoriteTransaction = async function(ceramicClient, transactionHash
   await add(ceramicClient, 'favorite', transactionHash);
 }
 
-
 /**
  * Un-favorite a transaction. This call needs authentication
  */
@@ -122,8 +140,6 @@ const add = async function(ceramicClient, tag, item) {
     { pin: true }
   );
 
-  console.log(retrievedDoc.content);
-
   if (!retrievedDoc.content
     || Object.keys(retrievedDoc.content).length === 0
   ) {
@@ -148,8 +164,6 @@ const remove = async function(ceramicClient, tag, item) {
     { pin: true }
   );
 
-  console.log(retrievedDoc.content);
-
   if (retrievedDoc.content === undefined || retrievedDoc.content === null) {
     return;
   } else {
@@ -168,8 +182,6 @@ const getList = async function(ceramicClient, tag, forAddress) {
       { family: forAddress, tags: [tag]},
       { pin: true }
     );
-
-    console.log(retrievedDoc.content);
 
     return retrievedDoc.content;
   } catch (error) {

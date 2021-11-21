@@ -32,4 +32,3 @@ export const CeramicContextWrapper = ({children}) => {
     </CeramicContext.Provider>
   )
 }
-
