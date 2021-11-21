@@ -1,4 +1,4 @@
-import { getEnsAddress } from "@ensdomains/ensjs";
+
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import {
   NoEthereumProviderError,
@@ -6,13 +6,7 @@ import {
 } from "@web3-react/injected-connector";
 import Head from "next/head";
 import * as React from "react";
-// getTxsForAddress(
-//   "0xb407e25E70CE8F9273CD9bD25Cf18a98AB151DCe"
-// ).then(console.log);
 
-// retrieveNftsByAddress("0xb407e25E70CE8F9273CD9bD25Cf18a98AB151DCe").then(
-//   console.log
-// );
 const getErrorMessage = (error) => {
   if (error instanceof NoEthereumProviderError) {
     return "No Ethereum browser provider detected. Please install MetaMask.";
@@ -39,7 +33,6 @@ export default function App() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1> Connected: {web3Context.active.toString()}</h1>
-      <p>ENS: {getEnsAddress("0x983110309620D911731Ac0932219af06091b6744")}</p>
       <p>{getErrorMessage(web3Context.error)}</p>
       <pre>{JSON.stringify(web3Context, null, 2)}</pre>
     </div>

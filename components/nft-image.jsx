@@ -17,7 +17,6 @@ NADbWsobDS1wOTyi_AcFjYmfKmz6Oxyre1kFSD93Rts.jpg
 ?auto=webp&s=832a2557421e6f81fb6dfd0110d652941b9de6c6`;
 
 export default function NftImage({ avatar }) {
-  console.log('avatar at nft-image',avatar);
   if (!avatar) return <Image alt="img" src={placeholderImage} />;
   const { contract, tokenId } = parseEnsAvatar(avatar);
   // eslint-disable-next-line react-hooks/rules-of-hooks

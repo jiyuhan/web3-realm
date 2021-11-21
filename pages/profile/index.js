@@ -11,7 +11,6 @@ import { fetcher } from "../../lib/fetcher";
 
 export default function Profile() {
   const web3Context = useWeb3React();
-
   const { active, account, library } = web3Context;
   const { client } = useCeramicContext();
   const [loading, setLoading] = React.useState(false);
@@ -24,25 +23,26 @@ export default function Profile() {
     mounted ? `/api/address-txs/?address=${account}` : null,
     fetcher
   );
+  const [following, setFollowing] = React.useState([]);
+
   const txsData = data ? data.data.items : [];
-  console.log(data);
 
   const { ens, url, avatar } = useEnsData({
     provider: library,
     address: account,
   });
-  console.log(ens);
-
+  const getPortfolioValue = async () => {
+    const response = await fetcher(`/api/portfolio-value/?address=${account}`);
+    setPortfolioValue(response);
+  };
+  const getFollowing = async () => {
+    setFollowing([]);
+  };
   React.useEffect(() => {
     setMounted(true);
     setLoading(true);
-    const getPortfolioValue = async () => {
-      const response = await fetcher(
-        `/api/portfolio-value/?address=${account}`
-      );
-      setPortfolioValue(response);
-    };
     getPortfolioValue();
+    getFollowing();
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
@@ -66,7 +66,7 @@ export default function Profile() {
       </Grid>
       <Grid xs={12}>
         <Card shadow width="100%">
-          <pre> {JSON.stringify(portfolioValue, null, 2)}</pre>
+          <pre> {JSON.stringify(getFollowing, null, 2)}</pre>
         </Card>
       </Grid>
       <Grid xs={24}>

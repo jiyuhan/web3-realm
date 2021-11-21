@@ -1,6 +1,14 @@
-import * as React from 'react';
-import {FeedCard} from '@/components/FeedCard';
-
+import { FeedCard } from "@/components/FeedCard";
+import * as React from "react";
+import {
+  authenticateAndGetClient,
+  favoriteTransaction,
+  follow,
+  loadAllFavoriteTransactions,
+  loadFollowing,
+  unfavoriteTransaction,
+  unfollow,
+} from "store/ceramicStore";
 export const FAKE_FEED = [
   {
     address: "0x983110309620D911731Ac0932219af06091b6744",
@@ -34,8 +42,29 @@ export const FAKE_FEED = [
   },
 ];
 
+export default function Feed() {
+  const ceramicClient =  authenticateAndGetClient();
+  const testingFunction = async function () {
+    await follow(ceramicClient, "0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba");
+    await loadFollowing(ceramicClient);
 
- export default function Feed () {
+    await unfollow(ceramicClient, "0xEd31Df7261CFFe94A81B63c6a408583Cf482f7Ba");
+    await loadFollowing(ceramicClient);
+
+    await favoriteTransaction(
+      ceramicClient,
+      "0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3"
+    );
+    await loadAllFavoriteTransactions(ceramicClient);
+
+    await unfavoriteTransaction(
+      ceramicClient,
+      "0xc6ddfacc31833b7c6e5dc59bf58a92706fd006e5dc37872dd0196ea8671be4f3"
+    );
+    await loadAllFavoriteTransactions(ceramicClient);
+  };
+  
+
   return (
     <div>
       {FAKE_FEED.map((item, idx) => (
@@ -51,4 +80,4 @@ export const FAKE_FEED = [
       ))}
     </div>
   );
- }
+}

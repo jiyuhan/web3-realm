@@ -70,7 +70,7 @@ const testingFunction = async function () {
   );
   await loadAllFavoriteTransactions(ceramicClient);
 };
-
+testingFunction().then(console.log);
 export const WalletMetadataView = () => {
   const context = useWeb3React();
   const {

@@ -14,7 +14,6 @@
     "@ceramicnetwork/http-client": "^1.4.4",
     "@emotion/react": "^11.6.0",
     "@emotion/styled": "^11.6.0",
-    "@ensdomains/ensjs": "^2.0.1",
     "@ethersproject/providers": "^5.5.0",
     "@ethersproject/units": "^5.5.0",
     "@geist-ui/react": "^2.2.0",
