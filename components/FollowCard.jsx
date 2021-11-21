@@ -21,6 +21,7 @@ export const FollowCard = ({ address }) => {
   const web3Context = useWeb3React();
   const { library, chainId } = web3Context;
   const { ens, url, avatar } = useEnsData({ provider: library, address });
+  const topline = ens || address;
 
   return (
     <>
@@ -37,7 +38,7 @@ export const FollowCard = ({ address }) => {
               <Grid.Container direction="row">
                 <Grid xs={20} margin="1px">
                   <Text h4 mx="0px" my="5.5px">
-                    <Link href={`/user/?address=${ens}`}>{ens}</Link>
+                    <Link href={`/user/?address=${topline}`}>{topline}</Link>
                   </Text>
                 </Grid>
                 <Grid xs={24}>
