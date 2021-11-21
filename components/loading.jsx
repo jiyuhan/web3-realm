@@ -7,15 +7,6 @@ export const LoadingUI = () => {
       <Grid xs={24}>
         <Loading type="success" />
       </Grid>
-      <Grid xs={24}>
-        <Loading type="secondary" />
-      </Grid>
-      <Grid xs={24}>
-        <Loading type="warning" />
-      </Grid>
-      <Grid xs={24}>
-        <Loading type="error" />
-      </Grid>
     </Grid.Container>
   );
 };

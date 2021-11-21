@@ -114,9 +114,11 @@ export default function Profile() {
   }
 
   if (!client || !library) {
-    return <>
-      Connect to your wallet to view user data
-    </>;
+    return (
+      <div>
+        Loading... <LoadingUI />
+      </div>
+    );
   }
 
   if (!transactionsDetail || !client) {
