@@ -36,16 +36,18 @@ export default function Profile() {
 
   React.useEffect(() => {
     (async () => {
-      const response = await loadFollowing(client);
-      const { following } = response;
-      console.log(
-        "loadFollowing",
-        following[0],
-        address,
-        following.includes(address)
-      );
-      const isFollowed = following.includes(address);
-      setFollowed(isFollowed);
+      if (client) {
+        const response = await loadFollowing(client);
+        const { following } = response;
+        console.log(
+          "loadFollowing",
+          following[0],
+          address,
+          following.includes(address)
+        );
+        const isFollowed = following.includes(address);
+        setFollowed(isFollowed);
+      }
     })();
     setMounted(true);
     setLoading(true);
@@ -60,7 +62,10 @@ export default function Profile() {
       "resolved address",
       address
     );
-    follow(client, address);
+
+    if (client) {
+      follow(client, address);
+    }
   };
 
   const handleUnfollowClick = async (event) => {
@@ -71,7 +76,10 @@ export default function Profile() {
       "resolved address",
       address
     );
-    unfollow(client, address);
+
+    if (client) {
+      unfollow(client, address);
+    }
   };
   if (error) return <div>Failed to load users</div>;
   if (!data || loading)
