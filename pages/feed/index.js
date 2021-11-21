@@ -60,10 +60,18 @@ export default function Feed() {
             return following.includes(transaction.to) || following.includes(transaction.from);
           });
 
-          setFollowingTransactions(followingTransactions);
+
+
+          setFollowingTransactions((previousFollowingTransactions) => {
+            return followingTransactions
+          });
       })
       }
     })();
+
+    return () => {
+      library.removeAllListeners('block');
+    }
   }, [client]);
 
   return (

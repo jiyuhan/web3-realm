@@ -30,6 +30,8 @@ export default function Profile() {
 
   const [followingList, setFollowingList] = React.useState();
 
+  const [resolvedName, setResolvedName] = React.useState();
+
   const { ens, url, avatar } = useEnsData({ provider: library, address });
   const balance = useBalance({ account: address, library, chainId });
 
@@ -64,7 +66,9 @@ export default function Profile() {
         } else {
           const response = await loadFollowing(client);
           const { following } = response;
+          const resolvedName = await library.resolveName(address);
           setFollowingList(following);
+          setResolvedName(resolvedName);
         }
       }
     })();
@@ -86,7 +90,8 @@ export default function Profile() {
     );
 
     if (client) {
-      follow(client, address);
+      const resolvedAddress = await library.resolveName(address);
+      follow(client, resolvedAddress);
       setLoading(true);
     }
   };
@@ -131,7 +136,7 @@ export default function Profile() {
         <NftImage avatar={avatar} />
       </Grid>
       <Grid md={24} justify="center">
-        {(followingList ? followingList.includes(address) : false) ? (
+        {(followingList ? followingList.includes(resolvedName) : false) ? (
           <Button
             icon={<Icon.UserX />}
             type="error"
@@ -160,8 +165,9 @@ export default function Profile() {
 
       <Grid xs={12}>
         <Card shadow width="100%">
-          <pre>balance:{balance}</pre>
-          <pre>site: {url}</pre>
+          <pre>Balance: {balance}</pre>
+          <pre>Ethereum Address: {resolvedName}</pre>
+          <pre>Site: {url}</pre>
           {/* <pre> {JSON.stringify(data[0], null, 2)}</pre> */}
         </Card>
       </Grid>
