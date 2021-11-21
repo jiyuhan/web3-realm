@@ -3,7 +3,12 @@ import NftImage from "@/components/nft-image";
 import ReadableTx from "@/components/readable-tx";
 import { Button, Card, Grid } from "@geist-ui/react";
 import * as Icon from "@geist-ui/react-icons";
-import { follow, loadFollowing, unfollow, detectFollowListChange } from "@store/ceramicStore";
+import {
+  follow,
+  loadFollowing,
+  unfollow,
+  detectFollowListChange,
+} from "@store/ceramicStore";
 import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/router";
 import * as React from "react";
@@ -23,7 +28,7 @@ export default function Profile() {
   const [mounted, setMounted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const[ followingList, setFollowingList ] = React.useState();
+  const [followingList, setFollowingList] = React.useState();
 
   const { ens, url, avatar } = useEnsData({ provider: library, address });
   const balance = useBalance({ account: address, library, chainId });
@@ -39,16 +44,20 @@ export default function Profile() {
   const txsData = transactionsDetail?.data.items || [];
 
   React.useEffect(() => {
-
     (async () => {
       if (client) {
         if (loading) {
           try {
-            const response = await detectFollowListChange(client, client.signedInEthAddress, followingList, 10000);
+            const response = await detectFollowListChange(
+              client,
+              client.signedInEthAddress,
+              followingList,
+              10000
+            );
             setFollowingList(response.following);
             setLoading(false);
           } catch (error) {
-            console.error('Error detected', error);
+            console.error("Error detected", error);
             // no change detected after timeout,
             setLoading(false);
           }
@@ -64,7 +73,7 @@ export default function Profile() {
 
     return () => {
       setMounted(false);
-    }
+    };
   }, [client, loading]);
 
   const handleFollowButtonClick = async (e) => {
@@ -117,6 +126,7 @@ export default function Profile() {
       height="100%"
       width="70%"
     >
+      {console.log("avatar: ", avatar)}
       <Grid md={24} justify="center">
         <NftImage avatar={avatar} />
       </Grid>
@@ -155,13 +165,6 @@ export default function Profile() {
           {/* <pre> {JSON.stringify(data[0], null, 2)}</pre> */}
         </Card>
       </Grid>
-      <Grid xs={24}>
-        <ReadableTx datetime="" cost="" />
-        {/* <Card shadow width="100%" height="50px">
-          {JSON.stringify(data)}
-        </Card> */}
-      </Grid>
-      <Grid>placeholder</Grid>
     </Grid.Container>
   );
 }

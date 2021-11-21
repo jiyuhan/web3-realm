@@ -6,6 +6,7 @@ export const useEnsData = (props) => {
   const [avatar, setAvatar] = React.useState();
   React.useEffect(() => {
     if (!!provider && !!address) {
+      console.log("provider", provider)
       let stale = false;
       // only way to use async inside useEffect
       (async () => {

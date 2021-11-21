@@ -1,14 +1,20 @@
 import { LoadingUI } from "@/components/loading";
 import NftImage from "@/components/nft-image";
 import ReadableTx from "@/components/readable-tx";
-import { Grid } from "@geist-ui/react";
-import { loadFollowing } from "@store/ceramicStore";
+import { Card, Grid, Text } from "@geist-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import useSWR from "swr";
 import { useCeramicContext } from "../../contexts/CeramicContext";
 import { useEnsData } from "../../hooks/useEnsData";
 import { fetcher } from "../../lib/fetcher";
+import {
+  follow,
+  loadFollowing,
+  unfollow,
+  detectFollowListChange,
+} from "@store/ceramicStore";
+import { FollowCard } from "../../components/FollowCard";
 
 export default function Profile() {
   const web3Context = useWeb3React();
@@ -20,13 +26,13 @@ export default function Profile() {
   const [portfolioValue, setPortfolioValue] = React.useState();
   const queryParams = new URLSearchParams({ account });
   //const api_route = `/api/nft/account?${queryParams}`;
-  const { data, error } = useSWR(
-    mounted ? `/api/address-txs/?address=${account}` : null,
-    fetcher
-  );
+  // const { data, error } = useSWR(
+  //   mounted ? `/api/address-txs/?address=${account}` : null,
+  //   fetcher
+  // );
   const [following, setFollowing] = React.useState([]);
 
-  const txsData = data ? data.data.items : [];
+  // const txsData = data ? data.data.items : [];
 
   const { ens, url, avatar } = useEnsData({
     provider: library,
@@ -44,18 +50,15 @@ export default function Profile() {
       if (client) {
         const response = await loadFollowing(client);
         const { following } = response;
+        console.log(following);
         setFollowing(following);
       }
     })();
     setMounted(true);
-    setLoading(true);
-    getPortfolioValue();
     getFollowing();
-    setTimeout(() => setLoading(false), 1000);
-  }, [client]);
+  }, [client, loading]);
 
-  if (error) return <div>Failed to load users</div>;
-  if (!data || loading)
+  if (loading)
     return (
       <div>
         Loading... <LoadingUI />
@@ -63,29 +66,15 @@ export default function Profile() {
     );
 
   return (
-    <Grid.Container gap={2} justify="center" height="100%" width="70%">
-      <Grid xs={12}>
-        <Grid.Container gap={2} justify="center" width="70%">
-          <Grid xs={24}>
-            <NftImage avatar={avatar} />
-          </Grid>
-          <Grid xs={12}></Grid>
-        </Grid.Container>
-      </Grid>
-      {/* {following && following.map((address) => {
-        return <Grid xs={12}>
-        <Card shadow width="100%">
-          <pre> {JSON.stringify(address, null, 2)}</pre>
-        </Card>
-      </Grid>
-      })} */}
-
-      <Grid xs={24}>
-        {/* TODO: map txsData to ReadableTx */}
-        {JSON.stringify(data)}
-        <ReadableTx datetime="" cost="" />
-      </Grid>
-      <Grid>placeholder</Grid>
-    </Grid.Container>
+    <div>
+      <NftImage avatar={avatar} />
+      <br />
+      <Text h1>Following</Text>
+      <br />
+      {following &&
+        following.map((address) => {
+          return <FollowCard address={address} />;
+        })}
+    </div>
   );
 }
