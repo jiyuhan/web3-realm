@@ -14,5 +14,5 @@ module.exports = {
   swcMinify: true,
   styledComponents: true,
   trailingSlash: true,
-  distDir: "build",
+  // distDir: "build",
 };
